@@ -1,0 +1,58 @@
+import React, { Component } from 'react';
+import { View, ListView, StyleSheet } from 'react-native';
+import SearchBar from './SearchBar';
+import EventListItem from './EventListItem';
+import * as eventService from './services/event-service-mock';
+
+export default class EventList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (r1, r2) => r1 !== r2
+      })
+    };
+    eventService.findAll().then(events => {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(events)
+      });
+    });
+  }
+
+  search(key) {
+    eventService.findByName(key).then(events => {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(events)
+      });
+    });
+  }
+
+  render() {
+    return (
+      <ListView
+        style={styles.container}
+        dataSource={this.state.dataSource}
+        enableEmptySections={true}
+        renderRow={data => (
+          <EventListItem navigator={this.props.navigator} data={data} />
+        )}
+        renderSeparator={(sectionId, rowId) => (
+          <View key={rowId} style={styles.separator} />
+        )}
+        renderHeader={() => <SearchBar onChange={this.search.bind(this)} />}
+      />
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFFFFF',
+    marginTop: 60
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#AAAAAA'
+  }
+});
+
