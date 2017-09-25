@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "name": "Full Stack Fest 2017",
+    "featured": true,
+    "endDate": "2017-09-04T09:00:00Z",
+    "startDate": "2017-09-04T18:00:00Z",
+    "city": "Barcelona",
+    "country": "Spain",
+    "image": "https://eventil.s3.amazonaws.com/uploads/event/header_image/41141/small_logo-7b6db735-2.jpg",
+    "about": "ColdFront is the front-end conference in Copenhagen. A two day and single track conference with 12 talks by internationally renowned speakers, 2 panel debates, amazing food and networking with industry leaders. Our focus is on the web, and where front-end world is headed. So sit tight, and get ready to be inspired."
+  },
+  {
+    "id": 2,
+    "name": "ColdFront Conference 2017",
+    "featured": true,
+    "endDate": "2017-09-05T09:00:00Z",
+    "startDate": "2017-09-05T18:00:00Z",
+    "city": "Copenhagen",
+    "country": "Denmark",
+    "image": "https://eventil.s3.amazonaws.com/uploads/event/header_image/47255/small_coldfront-is-back-blue_2x_comp.jpg",
+    "about": "Full Stack Fest 2017: Problems of today, wonders of the future!"
+  },
+  {
+    "id": 3,
+    "name": "ElixirConf 2017",
+    "featured": true,
+    "endDate": "2017-09-05T09:00:00Z",
+    "startDate": "2017-09-08T18:00:00Z",
+    "city": "Bellevue",
+    "country": "United States of America",
+    "image": "https://eventil.s3.amazonaws.com/uploads/event/header_image/49699/processed_elixirconf-2017-top-banner.jpg",
+    "about": "Attend the Premier functional language conference for Elixir, Phoenix and Nerves - ElixirConf™ US 2017!"
+  },
+  {
+    "id": 4,
+    "name": "React Native EU Conference 2017",
+    "featured": false,
+    "endDate": "2017-09-06T09:00:00Z",
+    "startDate": "2017-09-07T18:00:00Z",
+    "city": "Wrocław",
+    "country": "Poland",
+    "image": "https://eventil.s3.amazonaws.com/uploads/event/header_image/41119/small_logo_2x.jpg",
+    "about": "React Native comes to Poland First conference in the world to focus on anything and everything React Native."
+  },
+  {
+    "id": 5,
+    "name": "Agile Prague 2017",
+    "featured": false,
+    "endDate": "2017-09-11T00:00:00Z",
+    "startDate": "2017-09-12T00:00:00Z",
+    "city": "Prague",
+    "country": "Czech Republic",
+    "image": "https://eventil.s3.amazonaws.com/uploads/event/header_image/39313/small_logo_apc.jpg",
+    "about": "Book September 11-12, 2017 in your calendar for Agile Prague Conference. We are looking forward to see you!"
+  },
+  {
+    "id": 6,
+    "name": "The Hack Tour: Vilnius",
+    "featured": false,
+    "endDate": "2017-09-11T15:00:00Z",
+    "startDate": "2017-09-12T01:00:00Z",
+    "city": "Vilnius",
+    "country": "Lithuania",
+    "image": "https://eventil.s3.amazonaws.com/uploads/event/header_image/51528/small_21015903_1538013442888419_8085851264072368192_o.jpg",
+    "about": "Are you an entrepreneur, a developer or a community hustler? Eager to learn and meet interesting people?"
+  },
+  {
+    "id": 7,
+    "name": "DevOpsDays Chicago 2017",
+    "featured": false,
+    "endDate": "2017-09-12T08:00:00Z",
+    "startDate": "2017-09-13T18:00:00Z",
+    "city": "Chicago",
+    "country": "United States of America",
+    "image": "https://eventil.s3.amazonaws.com/uploads/event/header_image/42957/small_logo-square.jpg",
+    "about": "From fledgling startups to established industry, the Midwest is home to a large, vibrant technology community."
+  }
+]
