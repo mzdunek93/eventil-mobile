@@ -1,39 +1,26 @@
 import 'babel-polyfill';
 
-import React from 'react';
+import React, { Component } from 'react';
 import {
   AsyncStorage,
 } from 'react-native';
-import { Provider } from 'react-redux'
-import { createStore, applyMiddleware, compose } from 'redux'
-import { persistStore, autoRehydrate } from 'redux-persist'
-import createSagaMiddleware from 'redux-saga'
+import { ApolloProvider } from 'react-apollo';
+import ApolloClient, { createNetworkInterface } from 'apollo-client';
 
 import { Font } from 'expo';
 
-import reducer from './reducers'
-import rootSaga from './sagas'
 import './styles'
 
 import Eventil from './Eventil';
 import SplashScreen from './components/SplashScreen'
 
-const sagaMiddleware = createSagaMiddleware()
-const store = createStore(
-  reducer,
-  undefined,
-  compose(
-    applyMiddleware(sagaMiddleware),
-    autoRehydrate()
-  )
-)
+const networkInterface = createNetworkInterface('http://192.168.8.105:3000/graphql');
+const client = new ApolloClient({
+  networkInterface,
+  dataIdFromObject: r => r.id,
+});
 
-persistStore(store, {
-  storage: AsyncStorage,
-})
-sagaMiddleware.run(rootSaga)
-
-export default class App extends React.Component {
+export default class App extends Component {
   state = {
     loaded: false
   }
@@ -50,9 +37,9 @@ export default class App extends React.Component {
   render() {
     let { loaded } = this.state;
     return loaded ? (
-      <Provider store={store}>
+      <ApolloProvider client={client}>
         <Eventil />
-      </Provider>
+      </ApolloProvider>
     ) : <SplashScreen />;
   }
 }

@@ -52,17 +52,17 @@ class Event extends Component {
     return (
       <ScrollView>
         <View style={styles.header}>
-          <Image source={{ uri: event.image }} style={styles.image}/>
+          <Image source={{ uri: event.header_image }} style={styles.image}/>
         </View>
         <View style={styles.content}>
           <RkText rkType='date subtitle small' style={{ height: 20 }}>
-            {moment(event.startDate).format("MMMM Do HH:mm").toUpperCase()}
+            {moment(event.started_at).format("MMMM Do HH:mm").toUpperCase()}
           </RkText>
           <View style={styles.locationContainer}>
             <Image source={require('../assets/images/location.png')} style={styles.location} />
             <RkText rkType='subtitle'>{event.city}, {event.country}</RkText>
           </View>
-          <RkText style={styles.description}>{event.about}</RkText>
+          <RkText style={styles.description}>{event.description}</RkText>
         </View>
       </ScrollView>
     );
