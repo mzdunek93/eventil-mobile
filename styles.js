@@ -1,5 +1,16 @@
 import { RkTheme } from 'react-native-ui-kitten';
 
+RkTheme.setTheme({
+  colors: {
+    text: {
+      subtitle: '#8C96A9',
+      light: '#adadad'
+    },
+    foreground: '#222C3C', 
+    light: '#d6d6d6'
+  }
+});
+
 RkTheme.setType('RkCard', 'shadowed', {
   img: {
     height: 100,
@@ -16,6 +27,7 @@ RkTheme.setType('RkCard', 'shadowed', {
     justifyContent: 'flex-start',
     paddingTop: 0,
     paddingBottom: 14,
+    marginRight: 14,
   }
 });
 
@@ -31,11 +43,6 @@ RkTheme.setType('RkText', 'inverse', {
   color: RkTheme.current.colors.background,
 });
 
-RkTheme.setTheme({
-  colors: {
-    text: {
-      subtitle: '#8C96A9'
-    },
-    foreground: '#222C3C' 
-  }
+RkTheme.setType('RkText', 'light', {
+  color: RkTheme.current.colors.text.light,
 });

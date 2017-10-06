@@ -14,7 +14,7 @@ import './styles'
 import Eventil from './Eventil';
 import SplashScreen from './components/SplashScreen'
 
-const networkInterface = createNetworkInterface('http://192.168.8.105:3000/graphql');
+const networkInterface = createNetworkInterface({ uri: 'https://eventil.com/graphql' });
 const client = new ApolloClient({
   networkInterface,
   dataIdFromObject: r => r.id,

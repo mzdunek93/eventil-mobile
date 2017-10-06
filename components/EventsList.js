@@ -2,98 +2,173 @@ import React, { Component } from 'react'
 import {
   View,
   ScrollView,
+  FlatList,
   Text,
   Image,
-  Dimensions,
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import gql from 'graphql-tag';
-import { RkCard, RkText, RkStyleSheet } from 'react-native-ui-kitten';
+import { RkCard, RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
 import moment from 'moment';
 
 import graphql from '../graphql';
 
 import Touchable from './Touchable'
-
-const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+import EventCard from './EventCard'
 
 const styles = RkStyleSheet.create(theme => ({
   header: {
     padding: 10,
   },
-  location: {
-    height: 20,
-    resizeMode: 'contain',
-    marginRight: 3,
+  tagContainer: {
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  tag: {
+    marginRight: 5,
+    marginBottom: 5,
+    height: 28,
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderColor: RkTheme.current.colors.light,
+    borderWidth: 1,
+    backgroundColor: 'white',
+    flexDirection: 'row'
+  },
+  eventCard: { 
+    width: 300, 
+    paddingRight: 10
+  },
+  eventsContainer: {
+    paddingLeft: 10
   }
 }));
 
-@graphql(gql`
-  fragment ListEvent on Event {
-    id
-    name
-    header_image
-    started_at
-    ended_at
-    description
-    city
-    country
+const ListLoader = (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingLeft: 10, paddingRight: 20 }}>
+    <ActivityIndicator color={RkTheme.current.colors.foreground} size="large"/>
+  </View>
+)
+
+const ListPadding = <View style={{ width: 10 }} />
+
+const ListEvent = gql`
+  fragment ListEvent on EventConnection {
+    edges {
+      node {
+        id
+        name
+        started_at
+        ended_at
+        header_image
+        description
+        city
+        country
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
   }
-  query Query {
-    featuredEvents: events(featured: true) {
+`;
+
+@graphql(gql`
+  ${ListEvent}
+  query Query($eventsCursor: String, $featuredEventsCursor: String) {
+    featuredEvents: events(featured: true, first: 5, after: $featuredEventsCursor) @connection(key: "events", filter: ["featured"]) {
       ...ListEvent
     }
-    events(featured: false) {
+    events(featured: false, first: 5, after: $eventsCursor) @connection(key: "events", filter: ["featured"]) {
       ...ListEvent
+    }
+    topics(top: true) {
+      name
+      count
+    }
+    cities {
+      name
+      count
     }
   }
 `)
 export default class EventsList extends Component {
-  _renderEvent(event) {
+  renderTag = tag => {
+    let by = tag.__typename.toLowerCase();
     return (
-      <Touchable 
-        onPress={() => Actions.event({ event })} 
-        style={{ width: 300, paddingHorizontal: 10 }}
-        key={event.id}
-      >
-        <RkCard rkType='shadowed'>
-          <View rkCardHeader>
-            <Image source={{ uri: event.header_image }} rkCardImg/>
-          </View>
-          <View rkCardContent>
-            <RkText rkType='date subtitle small' style={{ height: 20 }}>
-              {moment(event.started_at).format("MMMM Do HH:mm").toUpperCase()}
-            </RkText>
-            <RkText rkType='large' style={{ height: 45 }}>{event.name}</RkText>
-          </View>
-          <View rkCardFooter>
-            <Image source={require('../assets/images/location.png')} style={styles.location} />
-            <RkText rkType='subtitle'>{event.city}, {event.country}</RkText>
-          </View>
-        </RkCard>
+      <Touchable onPress={() => Actions.searchBy({[by]: tag.name, by})} key={tag.name}>
+        <View style={styles.tag} key={tag.name}>
+          <RkText rkType="subtitle">{tag.name}</RkText>
+          <View style={{ width: 5 }} />
+          <RkText rkType="light">{tag.count}</RkText>
+        </View>
       </Touchable>
-    );
+    )
   }
 
-  render () {
-    const { data: { events, featuredEvents } } = this.props;
+  refresh = () => {
+    this.featuredEvents.scrollToOffset(0);
+    this.events.scrollToOffset(0);
+    this.props.refetch();
+  }
+
+  render() {
+    const { events, fetchMoreEvents, hasMoreEvents, featuredEvents, fetchMoreFeaturedEvents, hasMoreFeaturedEvents, 
+      topics, cities, loading } = this.props;
 
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView 
+        style={styles.container} 
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={this.refresh} />}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <RkText rkType='xlarge'>Featured events</RkText>
         </View>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {featuredEvents.map(event => this._renderEvent(event))}
-        </ScrollView>
+        <FlatList 
+          horizontal={true} 
+          data={featuredEvents} 
+          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} />} 
+          keyExtractor={(event) => event.id} 
+          showsHorizontalScrollIndicator={false} 
+          onEndReached={fetchMoreFeaturedEvents} 
+          onEndReachedThreshold={1}
+          ListFooterComponent={hasMoreFeaturedEvents ? ListLoader : ListPadding} 
+          ref={(list) => { this.featuredEvents = list }} 
+          style={styles.eventsContainer} />
         <View style={styles.header}>
           <RkText rkType='xlarge'>Other events</RkText>
         </View>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {events.map(event => this._renderEvent(event))}
-        </ScrollView>
+        <FlatList 
+          horizontal={true} 
+          data={events} 
+          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} />}
+          keyExtractor={(event) => event.id} 
+          showsHorizontalScrollIndicator={false} 
+          onEndReached={fetchMoreEvents} 
+          onEndReachedThreshold={1}
+          ListFooterComponent={hasMoreEvents ? ListLoader : ListPadding} 
+          ref={(list) => { this.events = list }} 
+          style={styles.eventsContainer} />
+        <View style={styles.header}>
+          <RkText rkType='xlarge'>Popular Cities</RkText>
+        </View>
+        <View style={styles.tagContainer}>
+          {cities.map(this.renderTag)}
+        </View>
+        <View style={styles.header}>
+          <RkText rkType='xlarge'>Popular Topics</RkText>
+        </View>
+        <View style={styles.tagContainer}>
+          {topics.map(this.renderTag)}
+        </View>
         <View style={{height: 16}} />
       </ScrollView>
     );
   }
-}
+};
+
+export const ListEventFragment = ListEvent;

@@ -13,11 +13,40 @@ const styles = RkStyleSheet.create(theme => ({
   },
 }));
 
-export default (...args) => (WrappedComponent) => {
-  @graphql(...args)
+export default (query, config = {}) => (WrappedComponent) => {
+  config.props = ({ data: { loading, error, fetchMore, variables, ...data }}) => {
+    let props = { loading, error };
+    for(const key of Object.keys(data)) {
+      if(data[key].edges) {
+        let capitalized = key.charAt(0).toUpperCase() + key.slice(1)
+        props[key] = data[key].edges.map(edge => edge.node);
+        props[`hasMore${capitalized}`] = data[key].pageInfo.hasNextPage;
+        props[`fetchMore${capitalized}`] = () => data[key].pageInfo.hasNextPage ? fetchMore({
+          variables: {
+            ...variables,
+            [`${key}Cursor`]: data[key].pageInfo.endCursor
+          },
+          updateQuery: (previousResult, { fetchMoreResult }) => {
+            return {
+            ...previousResult,
+            [key]: {
+              ...fetchMoreResult[key],
+              edges: [...previousResult[key].edges, ...fetchMoreResult[key].edges]
+            }
+          }},
+        }) : null;
+      } else {
+        props[key] = data[key];
+      }
+    }
+    return props;
+  }
+  @graphql(query, config)
   class Wrapper extends Component {
+    static navigationOptions = WrappedComponent.navigationOptions
+    
     render() {
-      const { data: { loading, error }} = this.props;
+      const { loading, error } = this.props;
       if (loading) {
         return <View style={styles.container}><ActivityIndicator color={RkTheme.current.colors.foreground} size="large" /></View>
       } else if(error) {

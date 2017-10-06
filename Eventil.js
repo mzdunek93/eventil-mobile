@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import EventsList from './components/EventsList'
 import Event from './components/Event'
+import SearchBy from './components/SearchBy'
 import SplashScreen from './components/SplashScreen'
 import * as actions from './actions'
 
@@ -28,17 +29,18 @@ const styles = RkStyleSheet.create(theme => ({
     paddingHorizontal: 10,
   },
   headerLeft: {
-    height: 30,
-    width: 30,
+    height: 40,
+    width: 40,
     marginRight: 10,
+    justifyContent: 'center'
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
   },
   headerRight: {
-    height: 30,
-    width: 30,
+    height: 40,
+    width: 40,
     marginLeft: 10,
   },
   logo: {
@@ -70,7 +72,7 @@ const Header = ({ getScreenDetails, scene }) => {
       {scene.index == 0 
       ? <Image source={require('./assets/images/logo.png')} style={styles.logo} /> 
       : <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name='ios-arrow-back-outline' size={30} color='white' />
+          <Ionicons name='ios-arrow-back-outline' size={40} color='white' />
         </TouchableOpacity>
       }
     </View>
@@ -100,6 +102,7 @@ class Eventil extends Component {
             <Stack key="events" title="Events" tabBarIcon={Icon} header={Header}>
               <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} />
               <Scene key="event" component={Event} />
+              <Scene key="searchBy" component={SearchBy} />
             </Stack>
             <Stack key="groups" title="Groups" tabBarIcon={Icon} header={Header}>
               <Scene key="root"component={SplashScreen} title="Groups"  leftButtonImage={require('./assets/images/logo.png')} onLeft={() => {}} />
