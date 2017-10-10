@@ -1,31 +1,35 @@
-import React, { Component } from 'react'
+import React, { Component, PureComponent } from 'react'
 import {
   View,
   ScrollView,
-  Animated,
+  SectionList,
   Text,
   Image,
-  Button
+  TouchableOpacity
 } from 'react-native'
+import gql from 'graphql-tag';
+import { Actions } from 'react-native-router-flux'
 import { TabNavigator } from 'react-navigation';
-import { RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
+import { RkText, RkStyleSheet, RkTheme, RkCard } from 'react-native-ui-kitten';
+import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
+import _ from 'lodash';
 
-const HEADER_HEIGHT = 150;
+import graphql from '../graphql';
+
+import Tag from './Tag';
 
 const styles = RkStyleSheet.create(theme => ({
   container: {
     flex: 1,
     position: 'relative',
+    backgroundColor: 'white'
   },
   tabsContainer: {
     flex: 1,
-    transform: [{
-      translateY: HEADER_HEIGHT
-    }]
   },
   header: {
-    height: HEADER_HEIGHT,
+    height: 150,
     flexDirection: 'row',
     overflow: 'hidden',
     position: 'absolute',
@@ -33,114 +37,231 @@ const styles = RkStyleSheet.create(theme => ({
     left: 0,
     right: 0,
   },
+  title: {
+    marginBottom: 12,
+  },
   image: {
     flex: 1,
     height: 150,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
-  location: {
-    height: 20,
-    resizeMode: 'contain',
-    marginRight: 3,
+  icon: {
+    width: 22,
+    textAlign: 'center',
+    marginRight: 10,
   },
-  locationContainer: { 
+  infoContainer: { 
     flexDirection: 'row', 
-    justifyContent: 'flex-start' 
+    justifyContent: 'flex-start',
+    marginTop: 2,
+    marginBottom: 2,
+    alignItems: 'center',
   },
   content: {
-    padding: 16
+    flex: 1,
+    padding: 16,
+    position: 'relative',
+    borderTopColor: RkTheme.current.colors.light,
+    borderTopWidth: 1
   },
-  description: {
-    marginTop: 16,
+  line: {
+    backgroundColor: RkTheme.current.colors.light,
+    height: 1,
+    marginTop: 20,
+    marginBottom: 20
+  },
+  section: {
+    padding: 10,
+    borderBottomColor: RkTheme.current.colors.light,
+    borderBottomWidth: 1,
+    flexDirection: 'row'
+  },
+  day: {
+    padding: 16,
+    backgroundColor: RkTheme.current.colors.bg,
+  },
+  sessionContent: {
+    flex: 4,
+  },
+  sessionTitle: {
+    marginVertical: 2,
+  },
+  avatarWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
   }
 }));
 
-const Overview = (props) => (
-  <View><Text>overview</Text></View>
-)
-
-const Agenda = (props) => (
-  <View><Text>agenda</Text></View>
-)
-class MyHomeScreen extends React.Component {
-  static navigationOptions = {
-    tabBarLabel: 'Home',
-  };
+class Description extends PureComponent {
+  state = {
+    showAll: false,
+  }
 
   render() {
-    return (
-      <Button
-        onPress={() => this.props.navigation.navigate('Notifications')}
-        title="Go to notifications"
-      />
-    );
+    let { content } = this.props;
+    if(content.length <= 160 || this.state.showAll) {
+      return <RkText>{content}</RkText>
+    } else {
+      return (
+        <View>
+          <RkText>{content.slice(0, 160) + '...'}</RkText>
+          <RkText rkType='subtitle' onPress={() => this.setState({ showAll: true })} style={{ marginTop: 2 }}>Show all</RkText>
+        </View>
+      )
+    }
   }
 }
 
-class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
-    tabBarLabel: 'Notifications',
-  };
-
+@graphql(gql`
+query Query($id: ID!) {
+  event(id: $id) {
+    id
+    name
+    started_at
+    ended_at
+    header_image
+    description
+    city
+    country
+    topics {
+      name
+    }
+  }
+}
+`, {
+  options: ({ screenProps }) => ({ variables: screenProps })
+})
+class Overview extends PureComponent {
   render() {
+    let { event } = this.props;
     return (
-      <Button
-        onPress={() => this.props.navigation.goBack()}
-        title="Go back home"
-      />
-    );
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Image source={{ uri: event.header_image }} style={styles.image}/>
+        <View style={styles.content}>
+          <View style={styles.infoContainer}>
+            <Ionicons name="ios-calendar-outline" size={24} color={RkTheme.current.colors.text.subtitle} style={styles.icon} />
+            <RkText rkType='subtitle'>{moment(event.started_at).format("ddd, DD MMM YYYY h:mm a")}</RkText>
+          </View>
+          <View style={styles.infoContainer}>
+            <Ionicons name="ios-pin-outline" size={24} color={RkTheme.current.colors.text.subtitle} style={styles.icon} />
+            <RkText rkType='subtitle'>{event.city}, {event.country}</RkText>
+          </View>
+          <View style={styles.line} />
+          <RkText rkType='large' style={styles.title}>About</RkText>
+          <Description content={event.description} />
+          <View style={styles.line} />
+          <RkText rkType='large' style={styles.title}>Topics</RkText>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            {
+              event.topics.length > 0
+              ? event.topics.map(topic => <Tag key={topic.name} data={topic} />)
+              : <RkText>No topics</RkText>
+            }
+          </View>
+        </View>
+      </ScrollView>
+    )
   }
 }
 
-const MyApp = TabNavigator({
-  Home: {
-    screen: MyHomeScreen,
-  },
-  Notifications: {
-    screen: MyNotificationsScreen,
-  },
-}, {
-  tabBarPosition: 'top',
-  animationEnabled: true,
-  tabBarOptions: {
-    activeTintColor: '#e91e63',
-  },
-});
+class Session extends PureComponent {
+  render() {
+    let { session } = this.props;
+    const Wrapper = session.presentation ? TouchableOpacity : View;
+    return (
+      <Wrapper key={session.id} style={styles.section} onPress={() => Actions.session(this.props)}>
+        <View style={styles.sessionContent}>
+          <RkText rkType='subtitle small'>
+            {moment(session.start_time).format('h:mm a')} - {moment(session.end_time).format('h:mm a')}
+            {session.presentation && session.track && ` / ${session.track}`}
+          </RkText>
+          <RkText style={styles.sessionTitle}>{session.presentation ? session.presentation.draft.title : session.name}</RkText>
+          { session.presentation && <RkText rkType='subtitle small'>- {session.presentation.user.name}</RkText> }
+        </View>
+        { session.presentation && 
+          <View style={styles.avatarWrapper}>
+            <Image source={{ uri: session.presentation.user.profile.avatar }} style={styles.avatar} />
+            <Ionicons name="ios-arrow-forward" size={26} color={RkTheme.current.colors.light} style={{ marginLeft: 10 }} />
+          </View> 
+        }
+      </Wrapper>
+    )
+  }
+}
+
+@graphql(gql`
+query Query($id: ID!) {
+  event(id: $id) @connection(key: "agenda", filter: ["id"]) {
+    name
+    agenda_sessions {
+      id
+      day_number
+      start_time
+      end_time
+      track
+      name
+      presentation {
+        draft {
+          title
+          abstract
+        }
+        user {
+          name
+          profile {
+            avatar
+            twitter
+            github
+          }
+        }
+      }
+    }
+  }
+}
+`, {
+  options: ({ screenProps }) => ({ variables: screenProps })
+})
+class Agenda extends PureComponent {
+  render() {
+    let { event } = this.props;
+    let days = [];
+    let data = _.groupBy(_.sortBy(event.agenda_sessions, 'start_time'), 'day_number');
+    let event_date = moment(event.started_at);
+    for(day in data) {
+      days.push({ date: event_date.add(day - 1, 'days').format('dddd, MMM DD'), data: data[day]})
+    }
+    if(event.agenda_sessions.length === 0) {
+      return <RkText style={{ padding: 16 }}>No items</RkText>
+    }
+    return (
+      <SectionList
+        showsVerticalScrollIndicator={false}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => <Session session={item} event={event.name} />}
+        renderSectionHeader={({section}) => <RkText rkType='subtitle semibold' style={[styles.section, styles.day]}>{section.date.toUpperCase()}</RkText>}
+        sections={days}
+      />
+    )
+  }
+}
+
 export default class Event extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: `${navigation.state.params.event.name}`,
+    title: `${navigation.state.params.name}`,
   })
 
-  state = {
-    headerOffset: new Animated.Value(0),
-    tabsOffset: new Animated.Value(150)
-  }
-
-  scroll = ({ nativeEvent}) => {
-    console.log(nativeEvent)
-  }
-
-  overview = (event) => (props) => (
-    <ScrollView style={styles.content} onScroll={this.scroll} showsVerticalScrollIndicator={false}>
-      <RkText rkType='date subtitle small' style={{ height: 20 }}>
-        {moment(event.started_at).format("MMMM Do HH:mm").toUpperCase()}
-      </RkText>
-      <View style={styles.locationContainer}>
-        <Image source={require('../assets/images/location.png')} style={styles.location} />
-        <RkText rkType='subtitle'>{event.city}, {event.country}</RkText>
-      </View>
-      <RkText style={styles.description}>{event.description}</RkText>
-    </ScrollView>
-  )
-
   render () {
-    let { event } = this.props;
-    let headerHeight = this.state;
+    let { id } = this.props;
     
     const Tabs = TabNavigator(
       {
         Overview: {
-          screen: this.overview(event),
+          screen: Overview,
           path: '',
         },
         Agenda: {
@@ -149,29 +270,26 @@ export default class Event extends Component {
         }
       },
       {
-        tabBarPosition: 'top',
+        lazy: true,
+        tabBarPosition: 'bottom',
         tabBarOptions: {
           style: {
-            backgroundColor: 'white'
-          },
-          indicatorStyle: {
             backgroundColor: RkTheme.current.colors.foreground,
           },
+          indicatorStyle: {
+            backgroundColor: 'white'
+          },
           inactiveTintColor: RkTheme.current.colors.text.subtitle,
-          activeTintColor: RkTheme.current.colors.foreground,
-          pressColor: RkTheme.current.colors.light,
+          activeTintColor: 'white',
         }
       }
     );
 
     return (
       <View style={styles.container}>
-        <Animated.View style={styles.tabsContainer}>
-          <Tabs />
-        </Animated.View>
-        <Animated.View style={styles.header}>
-          <Image source={{ uri: event.header_image }} style={styles.image}/>
-        </Animated.View>
+        <View style={styles.tabsContainer}>
+          <Tabs screenProps={{ id }} />
+        </View>
       </View>
     );
   }

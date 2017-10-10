@@ -41,12 +41,10 @@ const ListPadding = <View style={{ height: 5 }} />
       ...ListEvent
     }
   }
-`, {
-  options: ({ navigation: { state: { params }}}) => params
-})
+`)
 export default class City extends Component {
   static navigationOptions = ({ navigation: { state: { params }} }) => ({
-    title: params.by === 'city' ? `Events in ${params.city}` : `Events about ${params.topic}`,
+    title: `${params[params.by]} events`,
   })
   
   refresh = () => {

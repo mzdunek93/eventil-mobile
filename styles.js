@@ -7,7 +7,8 @@ RkTheme.setTheme({
       light: '#adadad'
     },
     foreground: '#222C3C', 
-    light: '#d6d6d6'
+    light: '#d6d6d6',
+    bg: '#f9f9fb'
   }
 });
 
@@ -33,6 +34,10 @@ RkTheme.setType('RkCard', 'shadowed', {
 
 RkTheme.setType('RkText', 'basic', {
   fontFamily: 'OpenSans'
+});
+
+RkTheme.setType('RkText', 'semibold', {
+  fontFamily: 'OpenSansSemibold'
 });
 
 RkTheme.setType('RkText', 'bold', {

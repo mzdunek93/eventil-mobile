@@ -8,14 +8,13 @@ import {
   ActivityIndicator,
   RefreshControl
 } from 'react-native'
-import { Actions } from 'react-native-router-flux'
 import gql from 'graphql-tag';
 import { RkCard, RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
 import moment from 'moment';
 
 import graphql from '../graphql';
 
-import Touchable from './Touchable'
+import Tag from './Tag'
 import EventCard from './EventCard'
 
 const styles = RkStyleSheet.create(theme => ({
@@ -63,9 +62,7 @@ const ListEvent = gql`
         id
         name
         started_at
-        ended_at
         header_image
-        description
         city
         country
       }
@@ -97,19 +94,6 @@ const ListEvent = gql`
   }
 `)
 export default class EventsList extends Component {
-  renderTag = tag => {
-    let by = tag.__typename.toLowerCase();
-    return (
-      <Touchable onPress={() => Actions.searchBy({[by]: tag.name, by})} key={tag.name}>
-        <View style={styles.tag} key={tag.name}>
-          <RkText rkType="subtitle">{tag.name}</RkText>
-          <View style={{ width: 5 }} />
-          <RkText rkType="light">{tag.count}</RkText>
-        </View>
-      </Touchable>
-    )
-  }
-
   refresh = () => {
     this.featuredEvents.scrollToOffset(0);
     this.events.scrollToOffset(0);
@@ -157,13 +141,13 @@ export default class EventsList extends Component {
           <RkText rkType='xlarge'>Popular Cities</RkText>
         </View>
         <View style={styles.tagContainer}>
-          {cities.map(this.renderTag)}
+          {cities.map(city => <Tag data={city} key={city.name} />)}
         </View>
         <View style={styles.header}>
           <RkText rkType='xlarge'>Popular Topics</RkText>
         </View>
         <View style={styles.tagContainer}>
-          {topics.map(this.renderTag)}
+          {topics.map(topic => <Tag data={topic} key={topic.name} />)}
         </View>
         <View style={{height: 16}} />
       </ScrollView>

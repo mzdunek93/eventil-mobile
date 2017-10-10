@@ -8,10 +8,15 @@ import { Ionicons } from '@expo/vector-icons';
 import EventsList from './components/EventsList'
 import Event from './components/Event'
 import SearchBy from './components/SearchBy'
+import Session from './components/Session'
 import SplashScreen from './components/SplashScreen'
 import * as actions from './actions'
 
 const styles = RkStyleSheet.create(theme => ({
+  container: {
+    flex: 1,
+    backgroundColor: RkTheme.current.colors.light,
+  },
   statusBar: {
     height: Constants.statusBarHeight,
     backgroundColor: theme.colors.foreground
@@ -90,10 +95,16 @@ const Header = ({ getScreenDetails, scene }) => {
 class Eventil extends Component {
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.container}>
         <View style={styles.statusBar} />
         <Router>
-          <Tabs key="root" tabBarPosition="bottom" labelStyle={styles.label} 
+          <Stack key="events" title="Events" tabBarIcon={Icon} header={Header}>
+            <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} />
+            <Scene key="event" component={Event} />
+            <Scene key="searchBy" component={SearchBy} />
+            <Scene key="session" component={Session} />
+          </Stack>
+          {/* <Tabs key="root" tabBarPosition="bottom" labelStyle={styles.label} 
             activeBackgroundColor={RkTheme.current.colors.foreground} 
             inactiveBackgroundColor={RkTheme.current.colors.foreground}
             activeTintColor={RkTheme.current.colors.text.inverse}
@@ -116,7 +127,7 @@ class Eventil extends Component {
             <Stack key="settings" title="Settings" tabBarIcon={Icon} header={Header}>
               <Scene key="settings" component={SplashScreen} title="Settings" leftButtonImage={require('./assets/images/logo.png')} onLeft={() => {}} />
             </Stack>
-          </Tabs>
+          </Tabs> */}
         </Router>
       </View>
     );

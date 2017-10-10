@@ -28,6 +28,7 @@ export default class App extends Component {
   async componentDidMount() {
     await Font.loadAsync({
       'OpenSans': require('./assets/fonts/OpenSans-Regular.ttf'),
+      'OpenSansSemibold': require('./assets/fonts/OpenSans-Semibold.ttf'),
       'OpenSansBold': require('./assets/fonts/OpenSans-Bold.ttf'),
     });
 
