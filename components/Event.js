@@ -11,6 +11,7 @@ import gql from 'graphql-tag';
 import { Actions } from 'react-native-router-flux'
 import { TabNavigator } from 'react-navigation';
 import { RkText, RkStyleSheet, RkTheme, RkCard } from 'react-native-ui-kitten';
+import { MapView } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
 import _ from 'lodash';
@@ -129,6 +130,10 @@ query Query($id: ID!) {
     description
     city
     country
+    lat
+    lng
+    place_name
+    location
     topics {
       name
     }
@@ -155,6 +160,25 @@ class Overview extends PureComponent {
           <View style={styles.line} />
           <RkText rkType='large' style={styles.title}>About</RkText>
           <Description content={event.description} />
+          <View style={styles.line} />
+          <RkText rkType='large' style={styles.title}>Location</RkText>
+          <MapView
+            region={{
+              latitude: event.lat,
+              longitude: event.lng,
+              latitudeDelta: 0.0122,
+              longitudeDelta: 0.0051,
+            }}
+            style={{ flex: 1, height: 180 }}
+          >
+            <MapView.Marker
+              coordinate={{ latitude: event.lat, longitude: event.lng }}
+            />
+          </MapView>
+          <View style={{ alignItems: 'center' }}>
+            <RkText rkType='semibold large' style={{ marginTop: 8, textAlign: 'center' }}>{event.place_name}</RkText>
+            <RkText rkType='subtitle' style={{ textAlign: 'center' }}>{event.location}</RkText>
+          </View>
           <View style={styles.line} />
           <RkText rkType='large' style={styles.title}>Topics</RkText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
