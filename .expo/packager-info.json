@@ -1,8 +1,8 @@
 {
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 8222,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "packagerPid": 32430,
+  "expoServerNgrokUrl": "https://j2-x96.mzdunek93.eventil-mobile.exp.direct",
+  "packagerNgrokUrl": "https://packager.j2-x96.mzdunek93.eventil-mobile.exp.direct",
+  "ngrokPid": 12830
 }

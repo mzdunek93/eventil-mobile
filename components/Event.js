@@ -5,11 +5,12 @@ import {
   SectionList,
   Text,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  RefreshControl
 } from 'react-native'
 import gql from 'graphql-tag';
 import { Actions } from 'react-native-router-flux'
-import { TabNavigator } from 'react-navigation';
+import { TabNavigator, TabBarTop } from 'react-navigation';
 import { RkText, RkStyleSheet, RkTheme, RkCard } from 'react-native-ui-kitten';
 import { MapView } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
@@ -63,7 +64,13 @@ const styles = RkStyleSheet.create(theme => ({
     padding: 16,
     position: 'relative',
     borderTopColor: RkTheme.current.colors.light,
-    borderTopWidth: 1
+    borderTopWidth: 1,
+    shadowColor: '#00000021',
+    shadowOffset: {
+      height: 0
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4
   },
   line: {
     backgroundColor: RkTheme.current.colors.light,
@@ -144,9 +151,12 @@ query Query($id: ID!) {
 })
 class Overview extends PureComponent {
   render() {
-    let { event } = this.props;
+    let { event, loading, refetch } = this.props;
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
+        showsVerticalScrollIndicator={false}
+        ref={(list) => { this.overview = list }} >
         <Image source={{ uri: event.header_image }} style={styles.image}/>
         <View style={styles.content}>
           <View style={styles.infoContainer}>
@@ -252,7 +262,7 @@ query Query($id: ID!) {
 })
 class Agenda extends PureComponent {
   render() {
-    let { event } = this.props;
+    let { event, loading, refetch } = this.props;
     let days = [];
     let data = _.groupBy(_.sortBy(event.agenda_sessions, 'start_time'), 'day_number');
     let event_date = moment(event.started_at);
@@ -264,6 +274,8 @@ class Agenda extends PureComponent {
     }
     return (
       <SectionList
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
+        ref={(list) => { this.agenda = list }}
         showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}
         renderItem={({ item }) => <Session session={item} event={event.name} />}
@@ -296,6 +308,7 @@ export default class Event extends Component {
       {
         lazy: true,
         tabBarPosition: 'bottom',
+        tabBarComponent: TabBarTop,
         tabBarOptions: {
           style: {
             backgroundColor: RkTheme.current.colors.foreground,
