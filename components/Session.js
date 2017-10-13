@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import {
   View,
   ScrollView,
@@ -6,7 +6,8 @@ import {
   Text,
   Image,
   Button,
-  Linking
+  Linking,
+  FlatList
 } from 'react-native'
 import { RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +25,16 @@ const styles = RkStyleSheet.create(theme => ({
   header: {
     flexDirection: 'column',
     alignItems: 'center'
+  },
+  speaker: {
+    marginHorizontal: 5,
+    marginVertical: 10,
+    width: 140
+  },
+  speakersContainer: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
   },
   avatar: {
     height: 80,
@@ -61,22 +72,39 @@ const styles = RkStyleSheet.create(theme => ({
   },
 }));
 
-export default class Session extends Component {
+class Speaker extends PureComponent {
+  render() {
+    const { name, profile: { avatar, twitter, github } } = this.props
+    
+    const twitterIcon = twitter
+      ? <Ionicons name='logo-twitter' size={20} color='#00aced' style={styles.socialIcon} onPress={() => Linking.openURL(`https://twitter.com/${twitter}`)} />
+      : null;
+    const githubIcon = github
+      ? <Ionicons name='logo-github' size={20} style={styles.socialIcon} onPress={() => Linking.openURL(`https://github.com/${github}`)} />
+      : null;
+
+    return (
+      <View style={[styles.header, styles.speaker]}>
+        <Image source={{ uri: avatar }} style={styles.avatar} />
+        <RkText rkType='semibold' style={{ textAlign: 'center' }}>{name}</RkText>
+        <View style={styles.social}>
+          { twitterIcon }
+          { githubIcon }
+        </View>
+      </View>
+    )
+  }
+}
+
+export default class Session extends PureComponent {
   static navigationOptions = ({ navigation }) => ({
     title: `${navigation.state.params.event}`,
   })
 
   render () {
-    let { session: { start_time, end_time, day_number, track, presentation } } = this.props;
-    let { draft: { title, abstract }, user: { name, profile: { avatar, twitter, github } }} = presentation;
-
-    let twitterIcon = twitter
-      ? <Ionicons name='logo-twitter' size={20} color='#00aced' style={styles.socialIcon} onPress={() => Linking.openURL(`https://twitter.com/${twitter}`)} />
-      : null;
-    let githubIcon = github
-      ? <Ionicons name='logo-github' size={20} style={styles.socialIcon} onPress={() => Linking.openURL(`https://github.com/${github}`)} />
-      : null;
-    let localization = track
+    const { session: { start_time, end_time, day_number, track, presentation } } = this.props;
+    const { draft: { title, abstract }, speakers } = presentation;
+    const localization = track
       ? (
         <View style={styles.infoContainer}>
           <Ionicons name="ios-pin-outline" size={24} color={RkTheme.current.colors.text.subtitle} style={styles.icon} />
@@ -87,11 +115,8 @@ export default class Session extends Component {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          <Image source={{ uri: avatar }} style={styles.avatar} />
-          <RkText rkType='semibold'>{name}</RkText>
-          <View style={styles.social}>
-            { twitterIcon }
-            { githubIcon }
+          <View style={styles.speakersContainer}>
+            { speakers.map(speaker => <Speaker key={speaker.id} {...speaker} />) }
           </View>
           <RkText rkType='xlarge' style={styles.title}>{title}</RkText>
         </View>

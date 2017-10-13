@@ -1,7 +1,31 @@
 {
   "expo": {
-    "name": "eventil",
-    "sdkVersion": "20.0.0",
-    "orientation": "portrait"
+    "name": "Eventil",
+    "sdkVersion": "21.0.0",
+    "orientation": "portrait",
+    "description": "An app for tech events",
+    "version": "1.0.0",
+    "slug": "eventil",
+    "icon": "./assets/images/icon.png",
+    "loading": {
+      "icon": "./assets/images/loading.png",
+      "backgroundColor": "#222c3c",
+      "hideExponentText": true
+    },
+    "ios": {
+      "bundleIdentifier": "com.eventil.eventil",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.eventil.eventil",
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAEMMyRSFyaEJ_ty_o_V79qCzjbKS0eeLo"
+        }
+      }
+    },
+    "scheme": "eventil",
+    "primaryColor": "#222c3c"
   }
 }

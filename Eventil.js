@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, BackHandler } from 'react-native';
 import { Scene, Stack, Router, Actions, Tabs } from 'react-native-router-flux';
 import { RkStyleSheet, RkText, RkTheme } from 'react-native-ui-kitten';
 import { Constants } from 'expo';
@@ -69,9 +69,12 @@ const Icon = ({ focused, navigation, tintColor }) => (
   <Ionicons name={tabIcons[navigation.state.key] + (focused ? '' : '-outline')} size={30} color={tintColor} />
 )
 
+let nav = {}
+
 const Header = ({ getScreenDetails, scene }) => {
   const { options, navigation } = getScreenDetails(scene);
   const { title, headerRight } = options;
+  nav = { navigation, scene };
   const left = (
     <View style={styles.headerLeft}>
       {scene.index == 0 
@@ -97,7 +100,7 @@ class Eventil extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.statusBar} />
-        <Router>
+        <Router backAndroidHandler={() => { nav.navigation.goBack(); return nav.scene.index !== 0; }}>
           <Stack key="events" title="Events" tabBarIcon={Icon} header={Header}>
             <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} />
             <Scene key="event" component={Event} />
