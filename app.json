@@ -3,7 +3,7 @@
     "name": "Eventil",
     "sdkVersion": "21.0.0",
     "orientation": "portrait",
-    "description": "An app for tech events",
+    "description": "Find and discover tech events and their participants",
     "version": "1.0.0",
     "slug": "eventil",
     "icon": "./assets/images/icon.png",
@@ -18,10 +18,10 @@
     },
     "android": {
       "package": "com.eventil.eventil",
-      "versionCode": 1,
+      "versionCode": 3,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyAEMMyRSFyaEJ_ty_o_V79qCzjbKS0eeLo"
+          "apiKey": "AIzaSyBQgcKRbwL3KXlpsDOrXrpG7J6EXETyPSs"
         }
       }
     },
