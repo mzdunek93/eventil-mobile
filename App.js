@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
+import Sentry from 'sentry-expo';
 
 import { Font } from 'expo';
 
@@ -13,6 +14,8 @@ import './styles'
 
 import Eventil from './Eventil';
 import SplashScreen from './components/SplashScreen'
+
+Sentry.config('https://84156d4400ad4b0e9b88227d41c709cb@sentry.io/233128').install();
 
 const networkInterface = createNetworkInterface({ uri: 'https://eventil.com/graphql' });
 const client = new ApolloClient({

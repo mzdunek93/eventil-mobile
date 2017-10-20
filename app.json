@@ -26,6 +26,18 @@
       }
     },
     "scheme": "eventil",
-    "primaryColor": "#222c3c"
+    "primaryColor": "#222c3c",
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "nukomeet",
+            "project": "eventil-mobile",
+            "authToken": "0525e6f1cdd94818ac2e55f896a283101197ec5f12b4444bbce91a2e2fba65c4"
+          }
+        }
+      ]
+    }
   }
 }
