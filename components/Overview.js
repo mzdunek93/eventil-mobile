@@ -74,6 +74,7 @@ class Description extends PureComponent {
 
   render() {
     let { content } = this.props;
+    content = content.replace(/<(?:.|\n)*?>/gm, '').trim();
     if(content.length <= 160 || this.state.showAll) {
       return <RkText>{content}</RkText>
     } else {
