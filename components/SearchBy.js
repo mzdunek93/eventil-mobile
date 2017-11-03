@@ -6,6 +6,7 @@ import {
   Image,
   ActivityIndicator,
   RefreshControl,
+  Dimensions
 } from 'react-native'
 import { RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
 import moment from 'moment';
@@ -16,6 +17,8 @@ import graphql from '../graphql';
 import EventCard from './EventCard'
 import { ListEventFragment } from './EventsList';
 
+const { width } = Dimensions.get('window');
+
 const styles = RkStyleSheet.create(theme => ({
   eventCard: { 
     paddingHorizontal: 10,
@@ -23,6 +26,9 @@ const styles = RkStyleSheet.create(theme => ({
   },
   eventsContainer: {
     paddingVertical: 10
+  },
+  cardImg: {
+    height: (width - 20)/2
   }
 }));
 
@@ -55,7 +61,7 @@ export default class City extends Component {
   render () {
     const { events, fetchMoreEvents, hasMoreEvents, loading } = this.props;
     return (
-      <FlatList data={events} renderItem={({item}) => <EventCard key={item.id} event={item} style={styles.eventCard} />} 
+      <FlatList data={events} renderItem={({item}) => <EventCard key={item.id} event={item} style={styles.eventCard} imgStyle={styles.cardImg} />} 
         keyExtractor={(event) => event.id} showsHorizontalScrollIndicator={false} style={styles.eventsContainer}
         onEndReached={fetchMoreEvents} onEndReachedThreshold={1}
         ListFooterComponent={hasMoreEvents ? ListLoader : ListPadding} ref={(list) => { this.events = list }}

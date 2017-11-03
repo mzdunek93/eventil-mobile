@@ -44,6 +44,9 @@ const styles = RkStyleSheet.create(theme => ({
   },
   eventsContainer: {
     paddingLeft: 10
+  },
+  cardImg: {
+    height: 150
   }
 }));
 
@@ -115,7 +118,7 @@ export default class EventsList extends Component {
         <FlatList 
           horizontal={true} 
           data={featuredEvents} 
-          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} />} 
+          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} imgStyle={styles.cardImg} />} 
           keyExtractor={(event) => event.id} 
           showsHorizontalScrollIndicator={false} 
           onEndReached={fetchMoreFeaturedEvents} 
@@ -129,7 +132,7 @@ export default class EventsList extends Component {
         <FlatList 
           horizontal={true} 
           data={events} 
-          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} />}
+          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} imgStyle={styles.cardImg} />}
           keyExtractor={(event) => event.id} 
           showsHorizontalScrollIndicator={false} 
           onEndReached={fetchMoreEvents} 

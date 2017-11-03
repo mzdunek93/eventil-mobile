@@ -19,15 +19,15 @@ const styles = RkStyleSheet.create(theme => ({
 
 export default class EventCard extends PureComponent {
   render() {
-    const { event, style } = this.props;
+    const { event, style, imgStyle } = this.props;
     return (
       <Touchable 
         onPress={() => Actions.event({ id: event.id, name: event.name })} 
         style={style}
       >
         <RkCard rkType='shadowed'>
-          <View rkCardHeader>
-            <Image source={{ uri: event.header_image }} rkCardImg />
+          <View rkCardHeader style={imgStyle}>
+            <Image source={{ uri: event.header_image }} rkCardImg style={imgStyle} />
           </View>
           <View rkCardContent>
             <RkText rkType='date subtitle small' style={{ height: 20 }}>
