@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Eventil",
-    "sdkVersion": "21.0.0",
+    "sdkVersion": "22.0.0",
     "orientation": "portrait",
     "description": "Find and discover tech events and their participants",
     "version": "1.0.0",
