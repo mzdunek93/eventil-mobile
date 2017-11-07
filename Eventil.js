@@ -11,6 +11,14 @@ import SearchBy from './components/SearchBy'
 import Session from './components/Session'
 import SplashScreen from './components/SplashScreen'
 import * as actions from './actions'
+import { GoogleAnalyticsTracker } from './analytics'
+import { GA_TRACKING_ID } from './constants'
+
+const tracker = new GoogleAnalyticsTracker(GA_TRACKING_ID)
+
+function onEnter(getData) {
+  return props => tracker.trackScreenView(props.routeName, getData(props))
+}
 
 const styles = RkStyleSheet.create(theme => ({
   container: {
@@ -102,10 +110,10 @@ class Eventil extends Component {
         <View style={styles.statusBar} />
         <Router backAndroidHandler={() => { nav.navigation.goBack(); return nav.scene.index !== 0; }}>
           <Stack key="events" title="Events" tabBarIcon={Icon} header={Header}>
-            <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} />
-            <Scene key="event" component={Event} />
-            <Scene key="searchBy" component={SearchBy} />
-            <Scene key="session" component={Session} />
+            <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} onEnter={onEnter(props => null)} />
+            <Scene key="event" component={Event} onEnter={onEnter(props => props.name)}/>
+            <Scene key="searchBy" component={SearchBy} onEnter={onEnter(props => props[props.by])} />
+            <Scene key="session" component={Session} onEnter={onEnter(props => props.session.id)} />
           </Stack>
           {/* <Tabs key="root" tabBarPosition="bottom" labelStyle={styles.label} 
             activeBackgroundColor={RkTheme.current.colors.foreground} 

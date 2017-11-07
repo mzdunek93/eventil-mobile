@@ -33,11 +33,11 @@ export default class EventCard extends PureComponent {
             <RkText rkType='date subtitle small' style={{ height: 20 }}>
               {moment(event.started_at).format("ddd, DD MMM YYYY h:mm a").toUpperCase()}
             </RkText>
-            <RkText rkType='large' style={{ height: 45 }}>{event.name}</RkText>
+            <RkText rkType='large' style={{ height: 45 }}>{event.name || "unknown"}</RkText>
           </View>
           <View rkCardFooter>
             <Ionicons name="ios-pin-outline" size={22} color={RkTheme.current.colors.text.subtitle} style={styles.location} />
-            <RkText rkType='subtitle' numberOfLines={1}>{event.city}, {event.country}</RkText>
+            <RkText rkType='subtitle' numberOfLines={1}>{event.city || "unknown"}, {event.country || "unknown"}</RkText>
             <View style={{ width: 10 }} />
           </View>
         </RkCard>

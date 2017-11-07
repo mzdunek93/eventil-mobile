@@ -7,6 +7,7 @@ import {
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import Sentry from 'sentry-expo';
+import { API_URL, GRAPHQL_TOKEN } from './constants'
 
 import { Font } from 'expo';
 
@@ -17,7 +18,20 @@ import SplashScreen from './components/SplashScreen'
 
 Sentry.config('https://84156d4400ad4b0e9b88227d41c709cb@sentry.io/233128').install();
 
-const networkInterface = createNetworkInterface({ uri: 'https://eventil.com/graphql' });
+const networkInterface = createNetworkInterface({ uri: API_URL });
+
+networkInterface.use([{
+  applyMiddleware(req, next) {
+    if (!req.options.headers) {
+      req.options.headers = {};  // Create the header object if needed.
+    }
+
+    // Send the login token in the Authorization header
+    req.options.headers.authorization = `Bearer ${GRAPHQL_TOKEN}`;
+    next();
+  }
+}]);
+
 const client = new ApolloClient({
   networkInterface,
   dataIdFromObject: r => r.id,
