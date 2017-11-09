@@ -53,9 +53,9 @@ export default class City extends Component {
     title: `${params[params.by]} events`,
   })
   
-  refresh = () => {
+  refresh = async () => {
     this.events.scrollToOffset(0);
-    this.props.refetch();
+    await this.props.refresh();
   }
 
   render () {
