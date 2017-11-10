@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import EventsList from './components/EventsList'
 import Event from './components/Event'
 import SearchBy from './components/SearchBy'
+import SearchEvents from './components/SearchEvents'
 import Session from './components/Session'
 import SplashScreen from './components/SplashScreen'
 import * as actions from './actions'
@@ -16,7 +17,7 @@ import { GA_TRACKING_ID } from './constants'
 
 const tracker = new GoogleAnalyticsTracker(GA_TRACKING_ID)
 
-function onEnter(getData) {
+function trackView(getData) {
   return props => tracker.trackScreenView(props.routeName, getData(props))
 }
 
@@ -45,16 +46,15 @@ const styles = RkStyleSheet.create(theme => ({
     height: 40,
     width: 40,
     marginRight: 10,
-    justifyContent: 'center'
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   headerRight: {
     height: 40,
     width: 40,
     marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   logo: {
     height: 30,
@@ -81,7 +81,7 @@ let nav = {}
 
 const Header = ({ getScreenDetails, scene }) => {
   const { options, navigation } = getScreenDetails(scene);
-  const { title, headerRight } = options;
+  const { title, headerRight, headerCenter } = options;
   nav = { navigation, scene };
   const left = (
     <View style={styles.headerLeft}>
@@ -93,11 +93,17 @@ const Header = ({ getScreenDetails, scene }) => {
       }
     </View>
   );
+  let center;
+  if(headerCenter) {
+    center = headerCenter(...scene.route.params);
+  } else {
+    center = <RkText rkType='xlarge inverse bold' numberOfLines={1} style={{ textAlign: 'center' }}>{title}</RkText>;
+  }
   const right = <View style={styles.headerRight}>{headerRight}</View>;
   return (
     <View style={styles.header}>
       {left}
-      <RkText rkType='xlarge inverse bold' numberOfLines={1} style={styles.headerTitle}>{title}</RkText>
+      <View style={{ flex: 1 }}>{center}</View>
       {right}
     </View>
   )
@@ -110,10 +116,11 @@ class Eventil extends Component {
         <View style={styles.statusBar} />
         <Router backAndroidHandler={() => { nav.navigation.goBack(); return nav.scene.index !== 0; }}>
           <Stack key="events" title="Events" tabBarIcon={Icon} header={Header}>
-            <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} onEnter={onEnter(props => null)} />
-            <Scene key="event" component={Event} onEnter={onEnter(props => props.name)}/>
-            <Scene key="searchBy" component={SearchBy} onEnter={onEnter(props => props[props.by])} />
-            <Scene key="session" component={Session} onEnter={onEnter(props => props.session.id)} />
+            <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} onEnter={trackView(props => null)} />
+            <Scene key="event" component={Event} onEnter={trackView(props => props.name)}/>
+            <Scene key="searchBy" component={SearchBy} onEnter={trackView(props => props[props.by])} />
+            <Scene key="searchEvents" component={SearchEvents} onEnter={trackView(props => props.query)} />
+            <Scene key="session" component={Session} onEnter={trackView(props => props.session.id)} />
           </Stack>
           {/* <Tabs key="root" tabBarPosition="bottom" labelStyle={styles.label} 
             activeBackgroundColor={RkTheme.current.colors.foreground} 

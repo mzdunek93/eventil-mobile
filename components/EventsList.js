@@ -6,11 +6,14 @@ import {
   Text,
   Image,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  TouchableOpacity
 } from 'react-native'
 import gql from 'graphql-tag';
+import { Actions } from 'react-native-router-flux'
 import { RkCard, RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
 import moment from 'moment';
+import { Ionicons } from '@expo/vector-icons';
 
 import graphql from '../graphql';
 
@@ -55,8 +58,12 @@ const ListLoader = (
     <ActivityIndicator color={RkTheme.current.colors.foreground} size="large"/>
   </View>
 )
-
 const ListPadding = <View style={{ width: 10 }} />
+const SearchButton = (
+  <TouchableOpacity onPress={_ => Actions.searchEvents()}>
+    <Ionicons name='ios-search' size={40} color='white'></Ionicons>
+  </TouchableOpacity>
+);
 
 const ListEvent = gql`
   fragment ListEvent on EventConnection {
@@ -97,6 +104,10 @@ const ListEvent = gql`
   }
 `)
 export default class EventsList extends Component {
+  static navigationOptions = {
+    headerRight: SearchButton
+  }
+
   refresh = async () => {
     this.featuredEvents.scrollToOffset(0);
     this.events.scrollToOffset(0);
