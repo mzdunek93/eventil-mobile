@@ -97,20 +97,20 @@ const ListEvent = gql`
   }
 `)
 export default class EventsList extends Component {
-  refresh = () => {
+  refresh = async () => {
     this.featuredEvents.scrollToOffset(0);
     this.events.scrollToOffset(0);
-    this.props.refetch();
+    await this.props.refresh();
   }
 
   render() {
     const { events, fetchMoreEvents, hasMoreEvents, featuredEvents, fetchMoreFeaturedEvents, hasMoreFeaturedEvents, 
-      topics, cities, loading } = this.props;
+      topics, cities, loading, refetching } = this.props;
 
     return (
       <ScrollView 
         style={styles.container} 
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={this.refresh} />}
+        refreshControl={<RefreshControl refreshing={refetching} onRefresh={this.refresh} />}
         showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <RkText rkType='xlarge'>Featured events</RkText>
