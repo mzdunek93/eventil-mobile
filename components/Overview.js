@@ -4,7 +4,8 @@ import {
   ScrollView,
   Text,
   Image,
-  RefreshControl
+  RefreshControl,
+  Dimensions
 } from 'react-native'
 import gql from 'graphql-tag';
 import { RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
@@ -15,6 +16,8 @@ import moment from 'moment';
 import graphql from '../graphql';
 
 import Tag from './Tag';
+
+const { width } = Dimensions.get('window');
 
 const styles = RkStyleSheet.create(theme => ({
   header: {
@@ -31,7 +34,7 @@ const styles = RkStyleSheet.create(theme => ({
   },
   image: {
     flex: 1,
-    height: 150,
+    height: width / 2,
     resizeMode: 'cover',
   },
   icon: {
