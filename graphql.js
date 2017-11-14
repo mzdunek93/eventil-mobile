@@ -26,20 +26,26 @@ export default (query, config = {}) => (WrappedComponent) => {
         let capitalized = key.charAt(0).toUpperCase() + key.slice(1)
         props[key] = data[key].edges.map(edge => edge.node);
         props[`hasMore${capitalized}`] = data[key].pageInfo.hasNextPage;
-        props[`fetchMore${capitalized}`] = () => data[key].pageInfo.hasNextPage ? fetchMore({
-          variables: {
-            ...variables,
-            [`${key}Cursor`]: data[key].pageInfo.endCursor
-          },
-          updateQuery: (previousResult, { fetchMoreResult }) => {
-            return {
-            ...previousResult,
-            [key]: {
-              ...fetchMoreResult[key],
-              edges: [...previousResult[key].edges, ...fetchMoreResult[key].edges]
-            }
-          }},
-        }) : null;
+        props[`fetchMore${capitalized}`] = async () => {
+          try {
+            data[key].pageInfo.hasNextPage ? await fetchMore({
+              variables: {
+                ...variables,
+                [`${key}Cursor`]: data[key].pageInfo.endCursor
+              },
+              updateQuery: (previousResult, { fetchMoreResult }) => {
+                return {
+                ...previousResult,
+                [key]: {
+                  ...fetchMoreResult[key],
+                  edges: [...previousResult[key].edges, ...fetchMoreResult[key].edges]
+                }
+              }},
+            }) : null;
+          } catch(e) {
+            
+          }
+        }
       } else {
         props[key] = data[key];
       }

@@ -70,7 +70,7 @@ const styles = RkStyleSheet.create(theme => ({
 
 class Session extends PureComponent {
   render() {
-    const { session: { id, start_time, end_time, presentation, track, name, favorite, inFavorites, switchFavorite } } = this.props;
+    const { session: { id, start_time, end_time, date, presentation, track, name, favorite, inFavorites, switchFavorite } } = this.props;
     const Wrapper = presentation ? TouchableOpacity : View;
     let heart = null;
     if(presentation) {
@@ -79,10 +79,6 @@ class Session extends PureComponent {
           <Ionicons name={ favorite ? 'md-heart' : 'md-heart-outline'} size={20} color={RkTheme.current.colors.foreground} />
         </View>
       </TouchableOpacity>);
-    }
-    let date = null;
-    if(inFavorites) {
-      date = moment(start_time).format('MMM DD') + ', ';
     }
     return (
       <View style={styles.session}>
@@ -179,10 +175,10 @@ export default class Agenda extends PureComponent {
     if(loadingFavs) {
       return <View style={styles.container}><ActivityIndicator color={RkTheme.current.colors.foreground} size="large" /></View>;
     }
+    let event_date = moment(event.started_at);
     let agenda_sessions = [];
     for(let i = 0; i < event.agenda_sessions.length; ++i) {
       const id = event.agenda_sessions[i].id;
-      let obj = {};
       if(favorites.includes(id)) {
         obj = { switchFavorite: () => this.removeFromFavorites(id), favorite: true };
       } else {
@@ -196,11 +192,10 @@ export default class Agenda extends PureComponent {
         date: 'Favorites', 
         data: agenda_sessions
           .filter(session => favorites.includes(session.id))
-          .map(session => Object.assign({}, session, { inFavorites: true })) 
+          .map(session => Object.assign({}, session, { date: event_date.add(event.day_number - 1, 'days').format('MMM DD') + ', ' })) 
       })
     }
     let data = _.groupBy(_.sortBy(agenda_sessions, 'start_time'), 'day_number');
-    let event_date = moment(event.started_at);
     for(day in data) {
       days.push({ date: event_date.add(day - 1, 'days').format('dddd, MMM DD'), data: data[day]})
     }
