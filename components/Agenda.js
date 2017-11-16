@@ -69,10 +69,18 @@ const styles = RkStyleSheet.create(theme => ({
 }));
 
 class Session extends PureComponent {
+  setHour(date, time) {
+    time = moment(time);
+    return moment(date).hours(time.hours()).minutes(time.minutes()).seconds(0);
+  }
+
   render() {
-    const { session: { id, start_time, end_time, date, presentation, track, name, favorite, inFavorites, switchFavorite } } = this.props;
+    const { session: { id, start_time, end_time, session_date, presentation, track, name, favorite, inFavorites, switchFavorite } } = this.props;
     const Wrapper = presentation ? TouchableOpacity : View;
-    let heart = null;
+    let heart = null, date = null;
+    const start = this.setHour(session_date, start_time);
+    const end = this.setHour(session_date, end_time);
+    const ongoing = moment() > start && moment() < end;
     if(presentation) {
       heart = (<TouchableOpacity onPress={() => switchFavorite()}>
         <View style={styles.favorite}>
@@ -80,11 +88,20 @@ class Session extends PureComponent {
         </View>
       </TouchableOpacity>);
     }
+    if(inFavorites) {
+      date = session_date.format('MMM DD') + ', ';
+    }
     return (
-      <View style={styles.session}>
+      <View style={[styles.session, ongoing ? { backgroundColor: '#fff6e8' } : {}]}>
         { heart }
         <Wrapper key={id} style={styles.section} onPress={() => Actions.session(this.props)}>
           <View style={styles.sessionContent}>
+            { ongoing &&
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 28, lineHeight: 20, color: "#f2aa46", marginRight: 4 }}>•</Text> 
+                <RkText rkType='small' style={{ color: "#f2aa46" }}>ONGOING</RkText>
+              </View>
+            }
             <RkText rkType='subtitle small'>
               {date}{moment(start_time).format('h:mm a')} - {moment(end_time).format('h:mm a')}
               {presentation && track && ` / ${track}`}
@@ -107,6 +124,7 @@ class Session extends PureComponent {
 @graphql(gql`
 query Query($id: ID!) {
   event(id: $id) @connection(key: "agenda", filter: ["id"]) {
+    id
     name
     agenda_sessions {
       id
@@ -179,10 +197,11 @@ export default class Agenda extends PureComponent {
     let agenda_sessions = [];
     for(let i = 0; i < event.agenda_sessions.length; ++i) {
       const id = event.agenda_sessions[i].id;
+      let obj = { session_date: event_date.add(event.agenda_sessions[i] - 1, 'days') }
       if(favorites.includes(id)) {
-        obj = { switchFavorite: () => this.removeFromFavorites(id), favorite: true };
+        obj = Object.assign(obj, { switchFavorite: () => this.removeFromFavorites(id), favorite: true });
       } else {
-        obj = { switchFavorite: () => this.addToFavorites(id), favorite: false };
+        obj = Object.assign(obj, { switchFavorite: () => this.addToFavorites(id), favorite: false });
       }
       agenda_sessions.push(Object.assign({}, event.agenda_sessions[i], obj));
     }
@@ -192,7 +211,7 @@ export default class Agenda extends PureComponent {
         date: 'Favorites', 
         data: agenda_sessions
           .filter(session => favorites.includes(session.id))
-          .map(session => Object.assign({}, session, { date: event_date.add(event.day_number - 1, 'days').format('MMM DD') + ', ' })) 
+          .map(session => Object.assign({}, session, { inFavorites: true }))
       })
     }
     let data = _.groupBy(_.sortBy(agenda_sessions, 'start_time'), 'day_number');
