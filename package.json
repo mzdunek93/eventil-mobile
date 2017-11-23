@@ -8,6 +8,9 @@
     "prettier": "1.7.4",
     "react-native-scripts": "1.7.0",
     "flow-bin": "^0.59.0",
+    "eslint": "^4.11.0",
+    "eslint-config-universe": "^1.0.6",
+    "prettier": "^1.8.2",
     "react-test-renderer": "16.0.0-alpha.12"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
@@ -17,7 +20,8 @@
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
     "test": "node node_modules/jest/bin/jest.js --watch",
-    "flow": "flow"
+    "flow": "flow",
+    "lint": "eslint --fix *.js"
   },
   "jest": {
     "preset": "jest-expo"
@@ -34,5 +38,8 @@
     "react-native-router-flux": "^4.0.0-beta.24",
     "react-native-ui-kitten": "^2.0.1",
     "sentry-expo": "~1.6.0"
+  },
+  "eslintConfig": {
+    "extends": "universe/native"
   }
 }
