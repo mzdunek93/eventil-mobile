@@ -5,7 +5,7 @@ import {
   AsyncStorage,
 } from 'react-native';
 import { ApolloProvider } from 'react-apollo';
-import ApolloClient, { createNetworkInterface } from 'apollo-client';
+import { ApolloClient, HttpLink, InMemoryCache, ApolloLink, concat } from 'apollo-client-preset';
 import Sentry from 'sentry-expo';
 import { API_URL, GRAPHQL_TOKEN } from './constants'
 
@@ -18,23 +18,21 @@ import SplashScreen from './components/SplashScreen'
 
 Sentry.config('https://84156d4400ad4b0e9b88227d41c709cb@sentry.io/233128').install();
 
-const networkInterface = createNetworkInterface({ uri: API_URL });
+const httpLink = new HttpLink({ uri: API_URL });
 
-networkInterface.use([{
-  applyMiddleware(req, next) {
-    if (!req.options.headers) {
-      req.options.headers = {};  // Create the header object if needed.
-    }
+const authMiddleware = new ApolloLink((operation, forward) => {
+  operation.setContext({
+    headers: {
+      authorization: `Bearer ${GRAPHQL_TOKEN}`,
+    } 
+  });
 
-    // Send the login token in the Authorization header
-    req.options.headers.authorization = `Bearer ${GRAPHQL_TOKEN}`;
-    next();
-  }
-}]);
+  return forward(operation);
+})
 
 const client = new ApolloClient({
-  networkInterface,
-  dataIdFromObject: r => r.id,
+  link: concat(authMiddleware, httpLink),
+  cache: new InMemoryCache(),
 });
 
 export default class App extends Component {
