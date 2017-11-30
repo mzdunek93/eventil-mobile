@@ -4,19 +4,19 @@ RkTheme.setTheme({
   colors: {
     text: {
       subtitle: '#8C96A9',
-      light: '#adadad'
+      light: '#adadad',
     },
-    foreground: '#222C3C', 
+    foreground: '#222C3C',
     light: '#d6d6d6',
-    bg: '#f9f9fb'
-  }
+    bg: '#f9f9fb',
+  },
 });
 
 RkTheme.setType('RkCard', 'shadowed', {
   img: {
     height: 100,
     flex: 1,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   header: {
     paddingHorizontal: 0,
@@ -29,19 +29,19 @@ RkTheme.setType('RkCard', 'shadowed', {
     paddingTop: 0,
     paddingBottom: 14,
     marginRight: 14,
-  }
+  },
 });
 
 RkTheme.setType('RkText', 'basic', {
-  fontFamily: 'OpenSans'
+  fontFamily: 'OpenSans',
 });
 
 RkTheme.setType('RkText', 'semibold', {
-  fontFamily: 'OpenSansSemibold'
+  fontFamily: 'OpenSansSemibold',
 });
 
 RkTheme.setType('RkText', 'bold', {
-  fontFamily: 'OpenSansBold'
+  fontFamily: 'OpenSansBold',
 });
 
 RkTheme.setType('RkText', 'inverse', {

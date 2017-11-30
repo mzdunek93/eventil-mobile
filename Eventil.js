@@ -5,20 +5,20 @@ import { RkStyleSheet, RkText, RkTheme } from 'react-native-ui-kitten';
 import { Constants } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 
-import EventsList from './components/EventsList'
-import Event from './components/Event'
-import SearchBy from './components/SearchBy'
-import SearchEvents from './components/SearchEvents'
-import Session from './components/Session'
-import SplashScreen from './components/SplashScreen'
-import * as actions from './actions'
-import { GoogleAnalyticsTracker } from './analytics'
-import { GA_TRACKING_ID } from './constants'
+import EventsList from './components/EventsList';
+import Event from './components/Event';
+import SearchBy from './components/SearchBy';
+import SearchEvents from './components/SearchEvents';
+import Session from './components/Session';
+import SplashScreen from './components/SplashScreen';
+import * as actions from './actions';
+import { GoogleAnalyticsTracker } from './analytics';
+import { GA_TRACKING_ID } from './constants';
 
-const tracker = new GoogleAnalyticsTracker(GA_TRACKING_ID)
+const tracker = new GoogleAnalyticsTracker(GA_TRACKING_ID);
 
 function trackView(getData) {
-  return props => tracker.trackScreenView(props.routeName, getData(props))
+  return props => tracker.trackScreenView(props.routeName, getData(props));
 }
 
 const styles = RkStyleSheet.create(theme => ({
@@ -28,10 +28,10 @@ const styles = RkStyleSheet.create(theme => ({
   },
   statusBar: {
     height: Constants.statusBarHeight,
-    backgroundColor: theme.colors.foreground
+    backgroundColor: theme.colors.foreground,
   },
   label: {
-    fontFamily: 'OpenSans'
+    fontFamily: 'OpenSans',
   },
   header: {
     flexDirection: 'row',
@@ -47,20 +47,20 @@ const styles = RkStyleSheet.create(theme => ({
     width: 40,
     marginRight: 10,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   headerRight: {
     height: 40,
     width: 40,
     marginLeft: 10,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   logo: {
     height: 30,
     width: 30,
     resizeMode: 'contain',
-  }
+  },
 }));
 
 const tabIcons = {
@@ -68,16 +68,20 @@ const tabIcons = {
   groups: 'ios-people',
   people: 'ios-microphone',
   myeventil: 'ios-heart',
-  settings: 'ios-settings'
-}
+  settings: 'ios-settings',
+};
 
-const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
 const Icon = ({ focused, navigation, tintColor }) => (
-  <Ionicons name={tabIcons[navigation.state.key] + (focused ? '' : '-outline')} size={30} color={tintColor} />
-)
+  <Ionicons
+    name={tabIcons[navigation.state.key] + (focused ? '' : '-outline')}
+    size={30}
+    color={tintColor}
+  />
+);
 
-let nav = {}
+let nav = {};
 
 const Header = ({ getScreenDetails, scene }) => {
   const { options, navigation } = getScreenDetails(scene);
@@ -85,19 +89,24 @@ const Header = ({ getScreenDetails, scene }) => {
   nav = { navigation, scene };
   const left = (
     <View style={styles.headerLeft}>
-      {scene.index == 0 
-      ? <Image source={require('./assets/images/logo.png')} style={styles.logo} /> 
-      : <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name='ios-arrow-back-outline' size={40} color='white' />
+      {scene.index == 0 ? (
+        <Image source={require('./assets/images/logo.png')} style={styles.logo} />
+      ) : (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="ios-arrow-back-outline" size={40} color="white" />
         </TouchableOpacity>
-      }
+      )}
     </View>
   );
   let center;
-  if(headerCenter) {
+  if (headerCenter) {
     center = headerCenter(...scene.route.params);
   } else {
-    center = <RkText rkType='xlarge inverse bold' numberOfLines={1} style={{ textAlign: 'center' }}>{title}</RkText>;
+    center = (
+      <RkText rkType="xlarge inverse bold" numberOfLines={1} style={{ textAlign: 'center' }}>
+        {title}
+      </RkText>
+    );
   }
   const right = <View style={styles.headerRight}>{headerRight}</View>;
   return (
@@ -106,21 +115,44 @@ const Header = ({ getScreenDetails, scene }) => {
       <View style={{ flex: 1 }}>{center}</View>
       {right}
     </View>
-  )
-}
+  );
+};
 
 class Eventil extends Component {
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.statusBar} />
-        <Router backAndroidHandler={() => { nav.navigation.goBack(); return nav.scene.index !== 0; }}>
+        <Router
+          backAndroidHandler={() => {
+            nav.navigation.goBack();
+            return nav.scene.index !== 0;
+          }}>
           <Stack key="events" title="Events" tabBarIcon={Icon} header={Header}>
-            <Scene key="events" component={EventsList} initial={true} title="Events" leftButtonImage={require('./assets/images/logo.png')} onEnter={trackView(props => null)} />
-            <Scene key="event" component={Event} onEnter={trackView(props => props.name)}/>
-            <Scene key="searchBy" component={SearchBy} onEnter={trackView(props => props[props.by])} />
-            <Scene key="searchEvents" component={SearchEvents} onEnter={trackView(props => props.query)} />
-            <Scene key="session" component={Session} onEnter={trackView(props => props.session.id)} />
+            <Scene
+              key="events"
+              component={EventsList}
+              initial={true}
+              title="Events"
+              leftButtonImage={require('./assets/images/logo.png')}
+              onEnter={trackView(props => null)}
+            />
+            <Scene key="event" component={Event} onEnter={trackView(props => props.name)} />
+            <Scene
+              key="searchBy"
+              component={SearchBy}
+              onEnter={trackView(props => props[props.by])}
+            />
+            <Scene
+              key="searchEvents"
+              component={SearchEvents}
+              onEnter={trackView(props => props.query)}
+            />
+            <Scene
+              key="session"
+              component={Session}
+              onEnter={trackView(props => props.session.id)}
+            />
           </Stack>
           {/* <Tabs key="root" tabBarPosition="bottom" labelStyle={styles.label} 
             activeBackgroundColor={RkTheme.current.colors.foreground} 

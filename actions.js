@@ -1,1 +1,1 @@
-export const EVENTS_FETCHED = 'EVENTS_FETCHED'
+export const EVENTS_FETCHED = 'EVENTS_FETCHED';
