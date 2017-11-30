@@ -126,6 +126,7 @@ query Query($id: ID!) {
   event(id: $id) @connection(key: "agenda", filter: ["id"]) {
     id
     name
+    started_at
     agenda_sessions {
       id
       day_number
@@ -197,7 +198,7 @@ export default class Agenda extends PureComponent {
     let agenda_sessions = [];
     for(let i = 0; i < event.agenda_sessions.length; ++i) {
       const id = event.agenda_sessions[i].id;
-      let obj = { session_date: event_date.add(event.agenda_sessions[i] - 1, 'days') }
+      let obj = { session_date: moment(event_date).add(event.agenda_sessions[i].day_number - 1, 'days') }
       if(favorites.includes(id)) {
         obj = Object.assign(obj, { switchFavorite: () => this.removeFromFavorites(id), favorite: true });
       } else {
@@ -209,14 +210,14 @@ export default class Agenda extends PureComponent {
     if(favorites.length) {
       days.push({ 
         date: 'Favorites', 
-        data: agenda_sessions
+        data: _.sortBy(agenda_sessions
           .filter(session => favorites.includes(session.id))
-          .map(session => Object.assign({}, session, { inFavorites: true }))
+          .map(session => Object.assign({}, session, { inFavorites: true })), ['day_number', 'start_time'])
       })
     }
     let data = _.groupBy(_.sortBy(agenda_sessions, 'start_time'), 'day_number');
     for(day in data) {
-      days.push({ date: event_date.add(day - 1, 'days').format('dddd, MMM DD'), data: data[day]})
+      days.push({ date: moment(event_date).add(day - 1, 'days').format('dddd, MMM DD'), data: data[day]})
     }
     if(agenda_sessions.length === 0) {
       return <RkText style={{ padding: 16 }}>No items</RkText>
