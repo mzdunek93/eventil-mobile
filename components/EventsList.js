@@ -7,7 +7,8 @@ import {
   Image,
   ActivityIndicator,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions
 } from 'react-native'
 import gql from 'graphql-tag';
 import { Actions } from 'react-native-router-flux'
@@ -19,6 +20,8 @@ import graphql from '../graphql';
 
 import Tag from './Tag'
 import EventCard from './EventCard'
+
+const { width, height } = Dimensions.get('window');
 
 const styles = RkStyleSheet.create(theme => ({
   header: {
@@ -43,6 +46,10 @@ const styles = RkStyleSheet.create(theme => ({
   },
   eventCard: { 
     width: 300, 
+    paddingRight: 10
+  },
+  eventCardFull: { 
+    paddingBottom: 10,
     paddingRight: 10
   },
   eventsContainer: {
@@ -127,9 +134,9 @@ export default class EventsList extends Component {
           <RkText rkType='xlarge'>Featured events</RkText>
         </View>
         <FlatList 
-          horizontal={true} 
+          horizontal={false} 
           data={featuredEvents} 
-          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} imgStyle={styles.cardImg} />} 
+          renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCardFull} imgStyle={styles.cardImg} />} 
           keyExtractor={(event) => event.id} 
           showsHorizontalScrollIndicator={false} 
           onEndReached={fetchMoreFeaturedEvents} 
