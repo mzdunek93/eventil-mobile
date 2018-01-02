@@ -13,6 +13,8 @@ import { MapView } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
 
+import getDirections from 'react-native-google-maps-directions'
+
 import graphql from '../graphql';
 
 import Tag from './Tag';
@@ -115,7 +117,31 @@ query Query($id: ID!) {
   options: ({ screenProps }) => ({ variables: screenProps })
 })
 export default class Overview extends PureComponent {
+  handleGetDirections = () => {
+    const { event } = this.props;
+
+    const data = {
+      source: {
+        latitude: event.lat,
+        longitude: event.lng
+      },
+      destination: {
+        latitude: event.lat,
+        longitude: event.lng
+      },
+      params: [
+        {
+          key: "dirflg",
+          value: "w"
+        }
+      ]
+    }
+
+    getDirections(data)
+  }
+
   render() {
+
     let { event, loading, refetch } = this.props;
     return (
       <ScrollView
@@ -145,6 +171,8 @@ export default class Overview extends PureComponent {
               longitudeDelta: 0.0051,
             }}
             style={{ flex: 1, height: 180 }}
+            scrollEnabled={false}
+            onPress={this.handleGetDirections}
           >
             <MapView.Marker
               coordinate={{ latitude: event.lat, longitude: event.lng }}
