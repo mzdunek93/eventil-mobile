@@ -4,7 +4,7 @@
     "sdkVersion": "24.0.0",
     "orientation": "portrait",
     "description": "Find and discover tech events and their participants",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "slug": "eventil",
     "icon": "./assets/images/icon.png",
     "loading": {
@@ -14,11 +14,11 @@
     },
     "ios": {
       "bundleIdentifier": "com.eventil.eventil",
-      "buildNumber": "5"
+      "buildNumber": "6"
     },
     "android": {
       "package": "com.eventil.eventil",
-      "versionCode": 9,
+      "versionCode": 10,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBQgcKRbwL3KXlpsDOrXrpG7J6EXETyPSs"
