@@ -161,6 +161,7 @@ export default class Overview extends PureComponent {
             }}
             style={{ flex: 1, height: 180 }}
             scrollEnabled={false}
+            zoomEnabled={false}
             onPress={this.handleGetDirections}
           >
             <MapView.Marker
