@@ -150,6 +150,8 @@ export default class Overview extends PureComponent {
         ref={(list) => { this.overview = list }} >
         <Image source={{ uri: event.header_image }} style={styles.image}/>
         <View style={styles.content}>
+          <RkText rkType='large'>{event.name}</RkText>
+          <View style={styles.line} />
           <View style={styles.infoContainer}>
             <Ionicons name="ios-calendar-outline" size={24} color={RkTheme.current.colors.text.subtitle} style={styles.icon} />
             <RkText rkType='subtitle'>{moment(event.started_at).format("ddd, DD MMM YYYY h:mm a")}</RkText>
