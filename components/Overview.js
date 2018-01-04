@@ -5,15 +5,14 @@ import {
   Text,
   Image,
   RefreshControl,
-  Dimensions
+  Dimensions,
+  Linking
 } from 'react-native'
 import gql from 'graphql-tag';
 import { RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
 import { MapView } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
-
-import getDirections from 'react-native-google-maps-directions'
 
 import graphql from '../graphql';
 
@@ -119,25 +118,15 @@ query Query($id: ID!) {
 export default class Overview extends PureComponent {
   handleGetDirections = () => {
     const { event } = this.props;
-
-    const data = {
-      source: {
-        latitude: event.lat,
-        longitude: event.lng
-      },
-      destination: {
-        latitude: event.lat,
-        longitude: event.lng
-      },
-      params: [
-        {
-          key: "dirflg",
-          value: "w"
-        }
-      ]
-    }
-
-    getDirections(data)
+    const uri = `http://maps.google.com/maps?q=${event.lat},${event.lng}`;
+    
+    return Linking.canOpenURL(uri).then(supported => {
+      if (!supported) {
+        return Promise.reject(new Error(`Could not open the uri: ${uri}`))
+      } else {
+        return Linking.openURL(uri)
+      }
+    })
   }
 
   render() {
