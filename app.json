@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "com.eventil.eventil",
-      "versionCode": 10,
+      "versionCode": 11,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBQgcKRbwL3KXlpsDOrXrpG7J6EXETyPSs"
