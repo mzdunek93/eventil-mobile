@@ -11,7 +11,7 @@ import {
 import gql from 'graphql-tag';
 import { RkText, RkStyleSheet, RkTheme } from 'react-native-ui-kitten';
 import { MapView } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import moment from 'moment';
 
 import graphql from '../graphql';
@@ -69,6 +69,21 @@ const styles = RkStyleSheet.create(theme => ({
     marginTop: 20,
     marginBottom: 20
   },
+  avatar: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    marginRight: 15
+  },
+  row: {
+    flexDirection: 'row'
+  },
+  column: {
+    flexDirection: 'column'
+  },
+  socialIcon: {
+    marginRight: 8,
+  }
 }));
 
 class Description extends PureComponent {
@@ -110,6 +125,36 @@ query Query($id: ID!) {
     topics {
       name
     }
+    user {
+      id
+      name
+      profile {
+        twitter
+        avatar
+        github
+        linkedin
+        twitter
+      }
+    }
+    groups {
+      id
+      name
+      avatar
+      facebook_id
+      meetup
+      twitter
+      admins {
+        id
+        name
+        profile {
+          twitter
+          avatar
+          github
+          linkedin
+          twitter
+        }
+      }
+    }
   }
 }
 `, {
@@ -129,9 +174,67 @@ export default class Overview extends PureComponent {
     })
   }
 
-  render() {
+  getSocialLinks = (obj) => {
+    const linkPatterns = {
+      'facebook_id': id => `http://facebook.com/profile.php?id=${id}`,
+      'meetup': name => `http://www.meetup.com/${name}/`,
+      'twitter': name => `http://twitter.com/${name}/`,
+      'github': name => `https://github.com/${name}/`,
+    }
 
-    let { event, loading, refetch } = this.props;
+    return Object.keys(obj)
+      .filter(key => obj[key] && linkPatterns[key])
+      .map(key => (
+        <FontAwesome name={key.split('_')[0]} size={24} color={RkTheme.current.colors.foreground} style={styles.socialIcon}
+          onPress={() => Linking.openURL(linkPatterns[key](obj[key]))} />
+      ))
+  }
+
+  renderOrganizers() {
+    const { event: { user, groups }} = this.props;
+    let admins = groups
+      .map(group => group.admins)
+      .reduce((acc, admins) => acc.concat(admins), [])
+      .filter(admin => admin.id != 1436);
+
+    let organizers = null;
+
+    if(groups.length || admins.length) {
+      organizers = (
+        <View>
+          <View style={styles.line} />
+          <RkText rkType='large' style={styles.title}>Organizers</RkText>
+          {admins.map(admin => (
+            <View key={'admin' + admin.id} style={styles.row}>
+              <Image source={{uri: admin.profile.avatar}} style={styles.avatar} />
+              <View style={styles.column}>
+                <RkText rkType='semibold medium' style={{ marginBottom: 5 }}>{admin.name}</RkText>
+                <View style={styles.row}>
+                  {this.getSocialLinks(admin)}
+                </View>
+              </View>
+            </View>
+          ))}
+          {groups.map(group => (
+            <View key={'group' + group.id} style={styles.row}>
+              <Image source={{uri: group.avatar}} style={styles.avatar} />
+              <View style={styles.column}>
+                <RkText rkType='semibold medium' style={{ marginBottom: 5 }}>{group.name}</RkText>
+                <View style={styles.row}>
+                  {this.getSocialLinks(group)}
+                </View>
+              </View>
+            </View>
+          ))}
+        </View>
+      );
+    }
+    return organizers;
+  }
+
+  render() {
+    const { event, loading, refetch } = this.props;
+
     return (
       <ScrollView
         refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
@@ -174,6 +277,7 @@ export default class Overview extends PureComponent {
             <RkText rkType='semibold large' style={{ marginTop: 8, textAlign: 'center' }}>{event.place_name}</RkText>
             <RkText rkType='subtitle' style={{ textAlign: 'center' }}>{event.location}</RkText>
           </View>
+          {this.renderOrganizers()}
           <View style={styles.line} />
           <RkText rkType='large' style={styles.title}>Topics</RkText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
