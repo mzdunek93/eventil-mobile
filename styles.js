@@ -30,6 +30,9 @@ RkTheme.setType('RkCard', 'shadowed', {
     paddingBottom: 14,
     marginRight: 14,
   },
+  content: {
+    paddingBottom: 7.5
+  }
 });
 
 RkTheme.setType('RkText', 'basic', {

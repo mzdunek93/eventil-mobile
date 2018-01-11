@@ -17,6 +17,7 @@ import moment from 'moment';
 import graphql from '../graphql';
 
 import Tag from './Tag';
+import Related from './Related';
 
 const { width } = Dimensions.get('window');
 
@@ -182,6 +183,9 @@ export default class Overview extends PureComponent {
               ? event.topics.map(topic => <Tag key={topic.name} data={topic} />)
               : <RkText>No topics</RkText>
             }
+          </View>
+          <View style={{ maxHeight: 330 }}>
+            <Related event={event} />
           </View>
         </View>
       </ScrollView>
