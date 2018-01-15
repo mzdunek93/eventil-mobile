@@ -1,9 +1,10 @@
 import 'babel-polyfill';
 
 import React, { Component } from 'react';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, View, StatusBar } from 'react-native';
 import { ApolloProvider } from 'react-apollo';
 import { ApolloClient, HttpLink, InMemoryCache, ApolloLink, concat } from 'apollo-client-preset';
+import { RkTheme } from 'react-native-ui-kitten';
 import Sentry from 'sentry-expo';
 import { API_URL, GRAPHQL_TOKEN } from './constants';
 
@@ -48,14 +49,25 @@ export default class App extends Component {
     this.setState({ loaded: true });
   }
 
-  render() {
-    let { loaded } = this.state;
-    return loaded ? (
+  renderApollo() {
+    return (
       <ApolloProvider client={client}>
         <Eventil />
       </ApolloProvider>
-    ) : (
-      <SplashScreen />
+    );
+  }
+
+  render() {
+    let { loaded } = this.state;
+    console.log(loaded)
+    return (
+      <View style={{ flex: 1 }}>
+        <StatusBar
+          backgroundColor={RkTheme.current.colors.foreground}
+          barStyle="light-content"
+        />
+        {loaded ? this.renderApollo() : <SplashScreen />}
+      </View>
     );
   }
 }
