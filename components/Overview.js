@@ -18,6 +18,7 @@ import graphql from '../graphql';
 
 import Tag from './Tag';
 import Related from './Related';
+import { EVENTIL_ID } from '../constants';
 
 const { width } = Dimensions.get('window');
 
@@ -197,12 +198,11 @@ export default class Overview extends PureComponent {
     let admins = groups
       .map(group => group.admins)
       .reduce((acc, admins) => acc.concat(admins), [])
-      .filter(admin => admin.id != 1436);
-
-    let organizers = null;
+      .filter(admin => admin.id != EVENTIL_ID);
+    if(user.id != EVENTIL_ID) admins = admins.concat(user);
 
     if(groups.length || admins.length) {
-      organizers = (
+      return (
         <View>
           <View style={styles.line} />
           <RkText rkType='large' style={styles.title}>Organizers</RkText>
@@ -231,7 +231,7 @@ export default class Overview extends PureComponent {
         </View>
       );
     }
-    return organizers;
+    return null;
   }
 
   renderLocation() {
