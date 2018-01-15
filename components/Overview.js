@@ -201,10 +201,11 @@ export default class Overview extends PureComponent {
 
   renderOrganizers() {
     const { event: { user, groups }} = this.props;
+    
     let admins = groups
       .map(group => group.admins)
       .reduce((acc, admins) => acc.concat(admins), [])
-      .filter(admin => admin.id != EVENTIL_ID);
+      .filter(admin => admin.id != EVENTIL_ID && admin.id != user.id);
     if(user.id != EVENTIL_ID) admins = admins.concat(user);
 
     if(groups.length || admins.length) {
