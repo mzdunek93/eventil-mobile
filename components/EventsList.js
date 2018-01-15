@@ -94,7 +94,7 @@ const ListEvent = gql`
 @graphql(gql`
   ${ListEvent}
   query Query($eventsCursor: String, $featuredEventsCursor: String) {
-    featuredEvents: events(featured: true, first: 5, after: $featuredEventsCursor) @connection(key: "events", filter: ["featured"]) {
+    featuredEvents: events(featured: true, first: 3, after: $featuredEventsCursor) @connection(key: "events", filter: ["featured"]) {
       ...ListEvent
     }
     events(featured: false, first: 5, after: $eventsCursor) @connection(key: "events", filter: ["featured"]) {
@@ -139,9 +139,6 @@ export default class EventsList extends Component {
           renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCardFull} imgStyle={styles.cardImg} />} 
           keyExtractor={(event) => event.id} 
           showsHorizontalScrollIndicator={false} 
-          onEndReached={fetchMoreFeaturedEvents} 
-          onEndReachedThreshold={1}
-          ListFooterComponent={hasMoreFeaturedEvents ? ListLoader : ListPadding} 
           ref={(list) => { this.featuredEvents = list }} 
           style={styles.eventsContainer} />
         <View style={styles.header}>
