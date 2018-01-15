@@ -56,6 +56,24 @@ const ListLoader = (
 )
 const ListPadding = <View style={{ height: 5 }} />
 
+class InputBar extends Component {
+  componentDidMount() {
+    this.ref.focus();
+  }
+
+  render() {
+    return (
+      <TextInput
+        ref={ component => this.ref = component }
+        style={styles.searchInput}
+        underlineColorAndroid='white'
+        selectionColor='white'
+        onChangeText={_.throttle((text) => Actions.refresh({ query: text }), 500)}
+      />
+    )
+  }
+}
+
 @graphql(gql`
   ${ListEventFragment}
   query Query($eventsCursor: String, $query: String) {
@@ -67,14 +85,7 @@ const ListPadding = <View style={{ height: 5 }} />
 export default class City extends Component {
   static navigationOptions = {
     headerRight: <Ionicons name='ios-search' size={40} color='white'></Ionicons>,
-    headerCenter: props => (
-      <TextInput
-        style={styles.searchInput}
-        underlineColorAndroid='white'
-        selectionColor='white'
-        onChangeText={_.throttle((text) => Actions.refresh({ query: text }), 500)}
-      />
-    )
+    headerCenter: props => <InputBar {...props} />
   }
 
   refresh = () => {
