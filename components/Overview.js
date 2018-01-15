@@ -183,12 +183,18 @@ export default class Overview extends PureComponent {
       'facebook_id': id => `http://facebook.com/profile.php?id=${id}`,
       'twitter': name => `http://twitter.com/${name}/`,
       'github': name => `https://github.com/${name}/`,
+      'url': url => url,
+    }
+
+    const icons = {
+      'facebook_id': 'facebook',
+      'url': 'link'
     }
 
     return Object.keys(obj)
       .filter(key => obj[key] && linkPatterns[key])
       .map(key => (
-        <FontAwesome key={key} name={key.split('_')[0]} size={24} color={RkTheme.current.colors.foreground} style={styles.socialIcon}
+        <FontAwesome key={key} name={icons[key] || key} size={24} color={RkTheme.current.colors.foreground} style={styles.socialIcon}
           onPress={() => Linking.openURL(linkPatterns[key](obj[key]))} />
       ))
   }
@@ -267,6 +273,22 @@ export default class Overview extends PureComponent {
     )
   }
 
+  renderSocialLinks() {
+    const { event } = this.props;
+
+    if(event.url || event.twitter) {
+      return (
+        <View>
+          <View style={styles.line} />
+          <RkText rkType='large' style={styles.title}>Social</RkText>
+          <View style={styles.row}>
+            {this.getSocialLinks(event)}
+          </View>
+        </View>
+      );
+    }
+  }
+
   render() {
     const { event, loading, refetch } = this.props;
 
@@ -299,6 +321,7 @@ export default class Overview extends PureComponent {
           <Description content={event.description} />
           {this.renderLocation()}
           {this.renderOrganizers()}
+          {this.renderSocialLinks()}
           <View style={styles.line} />
           <RkText rkType='large' style={styles.title}>Topics</RkText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
