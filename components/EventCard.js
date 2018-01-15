@@ -20,6 +20,14 @@ const styles = RkStyleSheet.create(theme => ({
 export default class EventCard extends PureComponent {
   render() {
     const { event, style, imgStyle } = this.props;
+
+    let location;
+    if(event.online) {
+      location = 'online';
+    } else {
+      location = `${event.city || "unknown"}, ${event.country || "unknown"}`;
+    }
+
     return (
       <Touchable 
         onPress={() => Actions.event({ id: event.id, name: event.name })} 
@@ -37,7 +45,7 @@ export default class EventCard extends PureComponent {
           </View>
           <View rkCardFooter>
             <Ionicons name="ios-pin-outline" size={22} color={RkTheme.current.colors.text.subtitle} style={styles.location} />
-            <RkText rkType='subtitle' numberOfLines={1}>{event.city || "unknown"}, {event.country || "unknown"}</RkText>
+            <RkText rkType='subtitle' numberOfLines={1}>{location}</RkText>
             <View style={{ width: 10 }} />
           </View>
         </RkCard>

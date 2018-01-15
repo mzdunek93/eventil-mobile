@@ -123,6 +123,9 @@ query Query($id: ID!) {
     lng
     place_name
     location
+    online
+    twitter
+    url
     topics {
       name
     }
@@ -142,7 +145,6 @@ query Query($id: ID!) {
       name
       avatar
       facebook_id
-      meetup
       twitter
       admins {
         id
@@ -178,7 +180,6 @@ export default class Overview extends PureComponent {
   getSocialLinks = (obj) => {
     const linkPatterns = {
       'facebook_id': id => `http://facebook.com/profile.php?id=${id}`,
-      'meetup': name => `http://www.meetup.com/${name}/`,
       'twitter': name => `http://twitter.com/${name}/`,
       'github': name => `https://github.com/${name}/`,
     }
@@ -186,7 +187,7 @@ export default class Overview extends PureComponent {
     return Object.keys(obj)
       .filter(key => obj[key] && linkPatterns[key])
       .map(key => (
-        <FontAwesome name={key.split('_')[0]} size={24} color={RkTheme.current.colors.foreground} style={styles.socialIcon}
+        <FontAwesome key={key} name={key.split('_')[0]} size={24} color={RkTheme.current.colors.foreground} style={styles.socialIcon}
           onPress={() => Linking.openURL(linkPatterns[key](obj[key]))} />
       ))
   }
@@ -233,8 +234,48 @@ export default class Overview extends PureComponent {
     return organizers;
   }
 
+  renderLocation() {
+    const { event: { online, lat, lng, place_name, location }} = this.props;
+
+    if(online) return null;
+
+    return (
+      <View>
+        <View style={styles.line} />
+        <RkText rkType='large' style={styles.title}>Location</RkText>
+        <MapView
+          region={{
+            latitude: lat,
+            longitude: lng,
+            latitudeDelta: 0.0122,
+            longitudeDelta: 0.0051,
+          }}
+          style={{ flex: 1, height: 180 }}
+          scrollEnabled={false}
+          zoomEnabled={false}
+          onPress={this.handleGetDirections}
+        >
+          <MapView.Marker
+            coordinate={{ latitude: lat, longitude: lng }}
+          />
+        </MapView>
+        <View style={{ alignItems: 'center' }}>
+          <RkText rkType='semibold large' style={{ marginTop: 8, textAlign: 'center' }}>{place_name}</RkText>
+          <RkText rkType='subtitle' style={{ textAlign: 'center' }}>{location}</RkText>
+        </View>
+      </View>
+    )
+  }
+
   render() {
     const { event, loading, refetch } = this.props;
+
+    let location;
+    if(event.online) {
+      location = 'online';
+    } else {
+      location = `${event.city || "unknown"}, ${event.country || "unknown"}`;
+    }
 
     return (
       <ScrollView
@@ -251,33 +292,12 @@ export default class Overview extends PureComponent {
           </View>
           <View style={styles.infoContainer}>
             <Ionicons name="ios-pin-outline" size={24} color={RkTheme.current.colors.text.subtitle} style={styles.icon} />
-            <RkText rkType='subtitle'>{event.city}, {event.country}</RkText>
+            <RkText rkType='subtitle'>{location}</RkText>
           </View>
           <View style={styles.line} />
           <RkText rkType='large' style={styles.title}>About</RkText>
           <Description content={event.description} />
-          <View style={styles.line} />
-          <RkText rkType='large' style={styles.title}>Location</RkText>
-          <MapView
-            region={{
-              latitude: event.lat,
-              longitude: event.lng,
-              latitudeDelta: 0.0122,
-              longitudeDelta: 0.0051,
-            }}
-            style={{ flex: 1, height: 180 }}
-            scrollEnabled={false}
-            zoomEnabled={false}
-            onPress={this.handleGetDirections}
-          >
-            <MapView.Marker
-              coordinate={{ latitude: event.lat, longitude: event.lng }}
-            />
-          </MapView>
-          <View style={{ alignItems: 'center' }}>
-            <RkText rkType='semibold large' style={{ marginTop: 8, textAlign: 'center' }}>{event.place_name}</RkText>
-            <RkText rkType='subtitle' style={{ textAlign: 'center' }}>{event.location}</RkText>
-          </View>
+          {this.renderLocation()}
           {this.renderOrganizers()}
           <View style={styles.line} />
           <RkText rkType='large' style={styles.title}>Topics</RkText>

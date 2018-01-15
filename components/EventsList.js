@@ -82,6 +82,7 @@ const ListEvent = gql`
         header_image
         city
         country
+        online
       }
     }
     pageInfo {
