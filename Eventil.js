@@ -11,6 +11,8 @@ import SearchBy from './components/SearchBy';
 import SearchEvents from './components/SearchEvents';
 import Session from './components/Session';
 import SplashScreen from './components/SplashScreen';
+import Location from './components/Location';
+import Topics from './components/Topics';
 import * as actions from './actions';
 import { GoogleAnalyticsTracker } from './analytics';
 import { GA_TRACKING_ID } from './constants';
@@ -119,7 +121,12 @@ const Header = ({ getScreenDetails, scene }) => {
 };
 
 class Eventil extends Component {
+
   render() {
+    const { location, topics } = this.props;
+    const boarded = location.length && topics.length;
+    console.log(location, topics);
+
     return (
       <View style={styles.container}>
         <View style={styles.statusBar} />
@@ -128,31 +135,48 @@ class Eventil extends Component {
             nav.navigation.goBack();
             return nav.scene.index !== 0;
           }}>
-          <Stack key="events" title="Events" tabBarIcon={Icon} header={Header}>
-            <Scene
-              key="events"
-              component={EventsList}
-              initial={true}
-              title="Events"
-              leftButtonImage={require('./assets/images/logo.png')}
-              onEnter={trackView(props => null)}
-            />
-            <Scene key="event" component={Event} onEnter={trackView(props => props.name)} />
-            <Scene
-              key="searchBy"
-              component={SearchBy}
-              onEnter={trackView(props => props[props.by])}
-            />
-            <Scene
-              key="searchEvents"
-              component={SearchEvents}
-              onEnter={trackView(props => props.query)}
-            />
-            <Scene
-              key="session"
-              component={Session}
-              onEnter={trackView(props => props.session.id)}
-            />
+          <Stack key="root" hideNavBar={true}>
+            <Stack key="Location" title="Location" hideNavBar={true} initial={!boarded}>
+              <Scene 
+                key="topics"
+                component={Topics}
+                initial={true}
+                title="Topics"
+                onEnter={trackView(props => null)}
+              />
+              <Scene 
+                key="location"
+                component={Location}
+                title="Location"
+                onEnter={trackView(props => null)}
+              />
+            </Stack>
+            <Stack key="events" title="Events" tabBarIcon={Icon} header={Header} initial={boarded}>
+              <Scene
+                key="events"
+                component={props => <EventsList {...props} location={location} interests={topics} />}
+                initial={true}
+                title="Events"
+                leftButtonImage={require('./assets/images/logo.png')}
+                onEnter={trackView(props => null)}
+              />
+              <Scene key="event" component={Event} onEnter={trackView(props => props.name)} />
+              <Scene
+                key="searchBy"
+                component={SearchBy}
+                onEnter={trackView(props => props[props.by])}
+              />
+              <Scene
+                key="searchEvents"
+                component={SearchEvents}
+                onEnter={trackView(props => props.query)}
+              />
+              <Scene
+                key="session"
+                component={Session}
+                onEnter={trackView(props => props.session.id)}
+              />
+            </Stack>
           </Stack>
           {/* <Tabs key="root" tabBarPosition="bottom" labelStyle={styles.label} 
             activeBackgroundColor={RkTheme.current.colors.foreground} 

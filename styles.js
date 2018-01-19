@@ -5,6 +5,7 @@ RkTheme.setTheme({
     text: {
       subtitle: '#8C96A9',
       light: '#adadad',
+      lightPurple: '#a7abb1'
     },
     foreground: '#222C3C',
     light: '#d6d6d6',
@@ -35,6 +36,10 @@ RkTheme.setType('RkCard', 'shadowed', {
   }
 });
 
+RkTheme.setType('RkText', 'thin', {
+  fontFamily: 'OpenSansLight',
+});
+
 RkTheme.setType('RkText', 'basic', {
   fontFamily: 'OpenSans',
 });
@@ -53,4 +58,12 @@ RkTheme.setType('RkText', 'inverse', {
 
 RkTheme.setType('RkText', 'light', {
   color: RkTheme.current.colors.text.light,
+});
+
+RkTheme.setType('RkText', 'light-purple', {
+  color: RkTheme.current.colors.text.lightPurple,
+});
+
+RkTheme.setType('RkText', 'xxlarge', {
+  fontSize: 30,
 });

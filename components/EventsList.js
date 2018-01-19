@@ -94,8 +94,11 @@ const ListEvent = gql`
 
 @graphql(gql`
   ${ListEvent}
-  query Query($eventsCursor: String, $featuredEventsCursor: String) {
+  query Query($eventsCursor: String, $featuredEventsCursor: String, $location: String, $topics: [String]) {
     featuredEvents: events(featured: true, first: 3, after: $featuredEventsCursor) @connection(key: "events", filter: ["featured"]) {
+      ...ListEvent
+    }
+    targetedEvents: events(featured: false, topics: $topics, where: $location, first: 5, after: $eventsCursor) @connection(key: "events", filter: ["where", "topics", "featured"]) {
       ...ListEvent
     }
     events(featured: false, first: 5, after: $eventsCursor) @connection(key: "events", filter: ["featured"]) {
@@ -110,7 +113,9 @@ const ListEvent = gql`
       count
     }
   }
-`)
+`, {
+  options: ({ location, interests }) => ({ variables: { location, topics: interests } })
+})
 export default class EventsList extends Component {
   static navigationOptions = {
     headerRight: SearchButton
@@ -118,13 +123,17 @@ export default class EventsList extends Component {
 
   refresh = async () => {
     this.featuredEvents.scrollToOffset(0);
+    this.targetedEvents.scrollToOffset(0);
     this.events.scrollToOffset(0);
     await this.props.refresh();
   }
 
   render() {
-    const { events, fetchMoreEvents, hasMoreEvents, featuredEvents, fetchMoreFeaturedEvents, hasMoreFeaturedEvents, 
-      topics, cities, loading, refetching } = this.props;
+    const { 
+      events, fetchMoreEvents, hasMoreEvents, 
+      targetedEvents, fetchMoretargetedEvents, hasMoretargetedEvents, 
+      featuredEvents, fetchMoreFeaturedEvents, hasMoreFeaturedEvents, 
+      topics, cities, loading, refetching, location, interests } = this.props;
 
     return (
       <ScrollView 
@@ -142,6 +151,23 @@ export default class EventsList extends Component {
           showsHorizontalScrollIndicator={false} 
           ref={(list) => { this.featuredEvents = list }} 
           style={styles.eventsContainer} />
+        { targetedEvents.length > 0 && 
+          <View>
+            <View style={styles.header}>
+              <RkText rkType='xlarge'>Matching your interests</RkText>
+            </View>
+            <FlatList 
+              horizontal={true} 
+              data={targetedEvents} 
+              renderItem={({item}) => <EventCard event={item} key={item.id} style={styles.eventCard} imgStyle={styles.cardImg} />}
+              keyExtractor={(event) => event.id} 
+              showsHorizontalScrollIndicator={false} 
+              onEndReached={fetchMoretargetedEvents} 
+              onEndReachedThreshold={1}
+              ListFooterComponent={hasMoretargetedEvents ? ListLoader : ListPadding} 
+              ref={(list) => { this.targetedEvents = list }} 
+              style={styles.eventsContainer} />
+            </View>}
         <View style={styles.header}>
           <RkText rkType='xlarge'>Other events</RkText>
         </View>

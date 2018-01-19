@@ -6,6 +6,7 @@ import { ApolloProvider } from 'react-apollo';
 import { ApolloClient, HttpLink, InMemoryCache, ApolloLink, concat } from 'apollo-client-preset';
 import { RkTheme } from 'react-native-ui-kitten';
 import Sentry from 'sentry-expo';
+import { SecureStore } from 'expo';
 import { API_URL, GRAPHQL_TOKEN } from './constants';
 
 import { Font } from 'expo';
@@ -37,29 +38,35 @@ const client = new ApolloClient({
 export default class App extends Component {
   state = {
     loaded: false,
+    topics: [],
+    location: ''
   };
 
   async componentDidMount() {
     await Font.loadAsync({
+      OpenSansLight: require('./assets/fonts/OpenSans-Light.ttf'),
       OpenSans: require('./assets/fonts/OpenSans-Regular.ttf'),
       OpenSansSemibold: require('./assets/fonts/OpenSans-Semibold.ttf'),
       OpenSansBold: require('./assets/fonts/OpenSans-Bold.ttf'),
     });
 
-    this.setState({ loaded: true });
+    const location = await SecureStore.getItemAsync('location');
+    const topics = (await SecureStore.getItemAsync('topics')).split(',');
+
+    this.setState({ loaded: true, location, topics });
   }
 
   renderApollo() {
+    const { location, topics } = this.state;
     return (
       <ApolloProvider client={client}>
-        <Eventil />
+        <Eventil location={location} topics={topics} />
       </ApolloProvider>
     );
   }
 
   render() {
     let { loaded } = this.state;
-    console.log(loaded)
     return (
       <View style={{ flex: 1 }}>
         <StatusBar
